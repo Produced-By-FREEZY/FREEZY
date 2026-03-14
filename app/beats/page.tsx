@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react" // Added use here
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { FilterSidebar, type FilterState } from "@/components/filter-sidebar"
@@ -9,12 +9,17 @@ import { Footer } from "@/components/footer"
 import { Breadcrumb } from "@/components/breadcrumb"
 
 interface BeatsPageProps {
-  searchParams: { search?: string; artist?: string }
+  // searchParams must be a Promise in Next.js 15/16
+  searchParams: Promise<{ search?: string; artist?: string }>
 }
 
-export default function BeatsPage({ searchParams }: BeatsPageProps) {
+export default function BeatsPage(props: BeatsPageProps) {
+  // Use the React 'use' hook to unwrap the promise in a client component
+  const searchParams = use(props.searchParams)
+  
   const searchQuery = searchParams.search
   const artistParam = searchParams.artist
+  
   const [filters, setFilters] = useState<FilterState | undefined>(undefined)
   const [initialFilters, setInitialFilters] = useState<Partial<FilterState> | undefined>(undefined)
   const router = useRouter()
