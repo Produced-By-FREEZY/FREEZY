@@ -34,8 +34,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Structured Data for Google (MusicGroup Schema)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    "name": "FЯEEZY",
+    "url": "https://www.freezy.ca",
+    "genre": ["Hip Hop", "Trap", "R&B"],
+    "description": "Professional music producer specializing in premium beats and custom instrumentals.",
+    "image": "https://www.freezy.ca/og-image.jpg", // Ensure this file exists in your /public folder
+  }
+
   return (
     <html lang="en" className="dark">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="font-sans antialiased">
         <AudioPlayerProvider>
           <Suspense fallback={null}>{children}</Suspense>
