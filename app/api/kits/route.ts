@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     console.log("[v0] Kits API called, featured only:", featuredOnly)
     console.log("[v0] NOTION_API_KEY exists:", !!notionApiKey)
-    console.log("[v0] NOTION_KITS_DATABASE_ID exists:", !!databaseId)
+    console.log("[v0] NOTION_BEATS_DATABASE_ID exists:", !!databaseId)
 
     if (!notionApiKey || !databaseId) {
       console.log("[v0] Missing environment variables - returning empty array for v0 preview")
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         checkbox: {
           equals: true,
         },
-      }
+      };
     }
 
     const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
@@ -199,7 +199,7 @@ export async function GET(request: Request) {
     console.log("[v0] Total kits transformed:", kits.length)
     console.log(
       "[v0] Kit titles:",
-      kits.map((k) => k.title),
+      kits.map((k: any) => k.title), // Added explicit :any type here
     )
     return NextResponse.json({ kits })
   } catch (error: any) {
