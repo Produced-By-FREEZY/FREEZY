@@ -34,7 +34,12 @@ export async function startCheckoutSession(
         },
       ],
       mode: "payment",
-      return_url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/success?session_id={CHECKOUT_SESSION_ID}`,
+      // This metadata helps you identify the specific beat in Stripe/Webhooks
+      metadata: {
+        beat_name: productName,
+      },
+      // Updated return_url to match your new success page
+      return_url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.freezy.ca"}/success?session_id={CHECKOUT_SESSION_ID}`,
     })
 
     console.log("[v0] Checkout session created:", session.id)
