@@ -9,10 +9,10 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
   },
 
-  // 3. React Compiler (New for 2026/Next.js 16)
-  // This reduces the amount of JavaScript sent to the browser
+  // 3. React Compiler - DISABLED
+  // Disabled to fix the "babel-plugin-react-compiler" missing error.
   experimental: {
-    reactCompiler: true,
+    reactCompiler: false,
   },
 
   // 4. Power-user: Security headers that help with Google's trust signals
