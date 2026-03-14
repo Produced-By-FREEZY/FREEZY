@@ -191,7 +191,7 @@ export async function GET(request: Request) {
     console.log("[v0] Total beats transformed:", beats.length)
     console.log(
       "[v0] Beat titles:",
-      beats.map((b) => b.title),
+      beats.map((b: any) => b.title), // Fixed: added explicit 'any' type to 'b'
     )
     return NextResponse.json({ beats })
   } catch (error: any) {
