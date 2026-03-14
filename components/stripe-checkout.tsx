@@ -45,18 +45,8 @@ export default function StripeCheckout({
     }
   }, [productName, productDescription, priceInCents, productImage])
 
-  const appearance = {
-    theme: "night" as const,
-    variables: {
-      colorPrimary: "#8c52ff",
-      colorBackground: "#0a0a0a",
-      colorText: "#ffffff",
-      colorDanger: "#ef4444",
-      fontFamily: "system-ui, sans-serif",
-      spacingUnit: "4px",
-      borderRadius: "8px",
-    },
-  }
+  // Note: 'appearance' is handled via the Stripe Dashboard for Embedded Checkout.
+  // We removed it from the Provider options to fix the build error.
 
   if (error) {
     return (
@@ -73,7 +63,6 @@ export default function StripeCheckout({
         stripe={stripePromise}
         options={{
           fetchClientSecret,
-          appearance,
         }}
       >
         <EmbeddedCheckout />
