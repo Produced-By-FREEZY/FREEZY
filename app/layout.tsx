@@ -34,6 +34,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Replace this with your actual Google Analytics Measurement ID
+  const GA_MEASUREMENT_ID = 'G-ZRF9B3LBEV'
+
   // Structured Data for Google (MusicGroup Schema)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -42,12 +45,30 @@ export default function RootLayout({
     "url": "https://www.freezy.ca",
     "genre": ["Hip Hop", "Trap", "R&B"],
     "description": "Professional music producer specializing in premium beats and custom instrumentals.",
-    "image": "https://www.freezy.ca/og-image.jpg", // Ensure this file exists in your /public folder
+    "image": "https://www.freezy.ca/og-image.jpg",
   }
 
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Google Analytics Global Site Tag (gtag.js) */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+        {/* Structured Data Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
