@@ -1,24 +1,24 @@
 import { MetadataRoute } from 'next'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = 'https://www.freezy.ca'
   const lastMod = new Date()
-  
+
   return [
     {
-      url: 'https://www.freezy.ca',
+      url: baseUrl,
       lastModified: lastMod,
-      changeFrequency: 'daily', // Changed from yearly to daily so Google finds new beats fast
+      changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: 'https://www.freezy.ca/about',
+      url: `${baseUrl}/about`,
       lastModified: lastMod,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
-    // IMPORTANT: Add your beats/store page here if it's a separate URL
     {
-      url: 'https://www.freezy.ca/beats', 
+      url: `${baseUrl}/beats`,
       lastModified: lastMod,
       changeFrequency: 'weekly',
       priority: 0.9,
