@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -19,374 +18,90 @@ const filterSections: FilterSection[] = [
   {
     title: "Type Beats",
     options: [
-      // Hip Hop / Rap - Top Tier
-      "Drake Type Beat",
-      "Kendrick Lamar Type Beat",
-      "Travis Scott Type Beat",
-      "Kanye West Type Beat",
-      "Lil Baby Type Beat",
-      "Future Type Beat",
-      "Playboi Carti Type Beat",
-      "21 Savage Type Beat",
-      "Gunna Type Beat",
-      "Young Thug Type Beat",
-      "Lil Uzi Vert Type Beat",
-      "Post Malone Type Beat",
-      "J. Cole Type Beat",
-      "Juice WRLD Type Beat",
-      "Pop Smoke Type Beat",
-      "Roddy Ricch Type Beat",
-      "DaBaby Type Beat",
-      "Polo G Type Beat",
-      "Lil Durk Type Beat",
-      "NBA YoungBoy Type Beat",
-      "Jack Harlow Type Beat",
-      "Tyler The Creator Type Beat",
-      "A$AP Rocky Type Beat",
-      "Kid Cudi Type Beat",
-      "Don Toliver Type Beat",
-      "Trippie Redd Type Beat",
-      "Lil Tjay Type Beat",
-      "Lil Tecca Type Beat",
-      "Yeat Type Beat",
-      "Ken Carson Type Beat",
-
-      // Hip Hop Legends
-      "Eminem Type Beat",
-      "Jay-Z Type Beat",
-      "Nas Type Beat",
-      "50 Cent Type Beat",
-      "Snoop Dogg Type Beat",
-      "Dr. Dre Type Beat",
-      "Lil Wayne Type Beat",
-      "2Pac Type Beat",
-      "Notorious B.I.G. Type Beat",
-      "Ice Cube Type Beat",
-      "DMX Type Beat",
-      "Outkast Type Beat",
-
-      // R&B / Soul - Top Artists
-      "The Weeknd Type Beat",
-      "SZA Type Beat",
-      "Bryson Tiller Type Beat",
-      "Frank Ocean Type Beat",
-      "Brent Faiyaz Type Beat",
-      "Summer Walker Type Beat",
-      "H.E.R. Type Beat",
-      "Khalid Type Beat",
-      "6LACK Type Beat",
-      "PARTYNEXTDOOR Type Beat",
-      "Jhené Aiko Type Beat",
-      "Kehlani Type Beat",
-      "Chris Brown Type Beat",
-      "Usher Type Beat",
-      "Beyoncé Type Beat",
-      "Rihanna Type Beat",
-      "Alicia Keys Type Beat",
-      "Daniel Caesar Type Beat",
-      "Giveon Type Beat",
-      "Ari Lennox Type Beat",
-
-      // Female Rap
-      "Nicki Minaj Type Beat",
-      "Cardi B Type Beat",
-      "Megan Thee Stallion Type Beat",
-      "Doja Cat Type Beat",
-      "Ice Spice Type Beat",
-      "Saweetie Type Beat",
-      "GloRilla Type Beat",
-
-      // UK Rap / Drill / Grime
-      "Central Cee Type Beat",
-      "Dave Type Beat",
-      "Stormzy Type Beat",
-      "Skepta Type Beat",
-      "J Hus Type Beat",
-      "Headie One Type Beat",
-      "Digga D Type Beat",
-      "AJ Tracey Type Beat",
-      "Fredo Type Beat",
-      "Giggs Type Beat",
-
-      // Afrobeat / African
-      "Burna Boy Type Beat",
-      "Wizkid Type Beat",
-      "Davido Type Beat",
-      "Tems Type Beat",
-      "Rema Type Beat",
-      "Asake Type Beat",
-      "Fireboy DML Type Beat",
-      "CKay Type Beat",
-      "Omah Lay Type Beat",
-      "Ayra Starr Type Beat",
-
-      // Latin / Reggaeton
-      "Bad Bunny Type Beat",
-      "J Balvin Type Beat",
-      "Ozuna Type Beat",
-      "Anuel AA Type Beat",
-      "Karol G Type Beat",
-      "Maluma Type Beat",
-      "Daddy Yankee Type Beat",
-      "Rauw Alejandro Type Beat",
-      "Myke Towers Type Beat",
-      "Feid Type Beat",
-      "Peso Pluma Type Beat",
-      "Rosalía Type Beat",
-      "Bizarrap Type Beat",
-
-      // Pop - Major Artists
-      "Taylor Swift Type Beat",
-      "Ariana Grande Type Beat",
-      "Billie Eilish Type Beat",
-      "Dua Lipa Type Beat",
-      "Ed Sheeran Type Beat",
-      "Justin Bieber Type Beat",
-      "Harry Styles Type Beat",
-      "Olivia Rodrigo Type Beat",
-      "Sabrina Carpenter Type Beat",
-      "The Weeknd Type Beat",
-      "Lady Gaga Type Beat",
-      "Miley Cyrus Type Beat",
-      "Selena Gomez Type Beat",
-      "Shawn Mendes Type Beat",
-      "Charlie Puth Type Beat",
-
-      // Alternative / Indie / Rock
-      "Tame Impala Type Beat",
-      "The Neighbourhood Type Beat",
-      "Arctic Monkeys Type Beat",
-      "Twenty One Pilots Type Beat",
-      "Imagine Dragons Type Beat",
-      "Coldplay Type Beat",
-      "The 1975 Type Beat",
-      "Joji Type Beat",
-      "Lorde Type Beat",
-      "Glass Animals Type Beat",
-
-      // Electronic / EDM
-      "Calvin Harris Type Beat",
-      "The Chainsmokers Type Beat",
-      "Marshmello Type Beat",
-      "Kygo Type Beat",
-      "Martin Garrix Type Beat",
-      "David Guetta Type Beat",
-      "Skrillex Type Beat",
-      "Diplo Type Beat",
-      "Flume Type Beat",
-      "Odesza Type Beat",
-
-      // Drill (Chicago / NY)
-      "Chief Keef Type Beat",
-      "King Von Type Beat",
-      "Fivio Foreign Type Beat",
-      "Sheff G Type Beat",
-      "Sleepy Hallow Type Beat",
-      "Kay Flock Type Beat",
-      "G Herbo Type Beat",
-
-      // Detroit
-      "42 Dugg Type Beat",
-      "Babyface Ray Type Beat",
-      "Veeze Type Beat",
-      "Baby Smoove Type Beat",
-      "Rio Da Yung OG Type Beat",
-
-      // Atlanta Trap
-      "Migos Type Beat",
-      "Quavo Type Beat",
-      "Offset Type Beat",
-      "Gucci Mane Type Beat",
-      "Young Nudy Type Beat",
-      "Lil Yachty Type Beat",
-
-      // Melodic / Emo Rap
-      "Lil Peep Type Beat",
-      "XXXTentacion Type Beat",
-      "Juice WRLD Type Beat",
-      "Trippie Redd Type Beat",
-      "Iann Dior Type Beat",
-
-      // Rage / Plugg
-      "Destroy Lonely Type Beat",
-      "SoFaygo Type Beat",
-      "SSGKobe Type Beat",
-      "Summrs Type Beat",
-
-      // Top Producers
-      "Metro Boomin Type Beat",
-      "Pierre Bourne Type Beat",
-      "Wheezy Type Beat",
-      "Nick Mira Type Beat",
-      "Kenny Beats Type Beat",
-      "Mike Will Made-It Type Beat",
-      "Murda Beatz Type Beat",
-      "Tay Keith Type Beat",
-      "Southside Type Beat",
-      "DJ Mustard Type Beat",
-
-      // West Coast
-      "YG Type Beat",
-      "Schoolboy Q Type Beat",
-      "Nipsey Hussle Type Beat",
-      "Blxst Type Beat",
-      "Ty Dolla Sign Type Beat",
-      "Larry June Type Beat",
-
-      // Florida
-      "Kodak Black Type Beat",
-      "Rick Ross Type Beat",
-      "Denzel Curry Type Beat",
-      "Rod Wave Type Beat",
-
-      // Memphis / Phonk
-      "Three 6 Mafia Type Beat",
-      "Juicy J Type Beat",
-      "Project Pat Type Beat",
-
-      // Reggae / Dancehall
-      "Vybz Kartel Type Beat",
-      "Popcaan Type Beat",
-      "Sean Paul Type Beat",
-      "Shenseea Type Beat",
-      "Skillibeng Type Beat",
-
-      // Country
-      "Morgan Wallen Type Beat",
-      "Luke Combs Type Beat",
-      "Kane Brown Type Beat",
-      "Chris Stapleton Type Beat",
-
-      // K-Pop
-      "BTS Type Beat",
-      "BLACKPINK Type Beat",
-      "Stray Kids Type Beat",
-      "NewJeans Type Beat",
-
-      // Jazz / Lo-Fi
-      "Nujabes Type Beat",
-      "J Dilla Type Beat",
-      "MF DOOM Type Beat",
-      "Madlib Type Beat",
-
-      // Additional Top Artists
-      "Meek Mill Type Beat",
-      "Big Sean Type Beat",
-      "Wiz Khalifa Type Beat",
-      "French Montana Type Beat",
-      "Moneybagg Yo Type Beat",
-      "EST Gee Type Beat",
-      "Pooh Shiesty Type Beat",
-      "Key Glock Type Beat",
-      "NLE Choppa Type Beat",
-      "Lil Mosey Type Beat",
-      "Lil Nas X Type Beat",
-      "Machine Gun Kelly Type Beat",
-      "Logic Type Beat",
-      "Cordae Type Beat",
-      "JID Type Beat",
-      "Denzel Curry Type Beat",
-      "Joey Bada$$ Type Beat",
-      "Anderson .Paak Type Beat",
-      "Baby Keem Type Beat",
-      "Vince Staples Type Beat",
-      "Freddie Gibbs Type Beat",
-      "Pusha T Type Beat",
-      "Benny The Butcher Type Beat",
-      "Conway The Machine Type Beat",
-      "Westside Gunn Type Beat",
-      "Boldy James Type Beat",
-      "Tory Lanez Type Beat",
-      "Nav Type Beat",
-      "Swae Lee Type Beat",
-      "Rae Sremmurd Type Beat",
-      "A Boogie Type Beat",
-      "PnB Rock Type Beat",
-      "Lil Skies Type Beat",
-      "Ski Mask Type Beat",
-      "Smokepurpp Type Beat",
-      "Lil Pump Type Beat",
+      "Drake Type Beat", "Kendrick Lamar Type Beat", "Travis Scott Type Beat", "Kanye West Type Beat",
+      "Lil Baby Type Beat", "Future Type Beat", "Playboi Carti Type Beat", "21 Savage Type Beat",
+      "Gunna Type Beat", "Young Thug Type Beat", "Lil Uzi Vert Type Beat", "Post Malone Type Beat",
+      "J. Cole Type Beat", "Juice WRLD Type Beat", "Pop Smoke Type Beat", "Roddy Ricch Type Beat",
+      "DaBaby Type Beat", "Polo G Type Beat", "Lil Durk Type Beat", "NBA YoungBoy Type Beat",
+      "Jack Harlow Type Beat", "Tyler The Creator Type Beat", "A$AP Rocky Type Beat", "Kid Cudi Type Beat",
+      "Don Toliver Type Beat", "Trippie Redd Type Beat", "Lil Tjay Type Beat", "Lil Tecca Type Beat",
+      "Yeat Type Beat", "Ken Carson Type Beat", "Eminem Type Beat", "Jay-Z Type Beat", "Nas Type Beat",
+      "50 Cent Type Beat", "Snoop Dogg Type Beat", "Dr. Dre Type Beat", "Lil Wayne Type Beat",
+      "2Pac Type Beat", "Notorious B.I.G. Type Beat", "Ice Cube Type Beat", "DMX Type Beat",
+      "Outkast Type Beat", "The Weeknd Type Beat", "SZA Type Beat", "Bryson Tiller Type Beat",
+      "Frank Ocean Type Beat", "Brent Faiyaz Type Beat", "Summer Walker Type Beat", "H.E.R. Type Beat",
+      "Khalid Type Beat", "6LACK Type Beat", "PARTYNEXTDOOR Type Beat", "Jhené Aiko Type Beat",
+      "Kehlani Type Beat", "Chris Brown Type Beat", "Usher Type Beat", "Beyoncé Type Beat",
+      "Rihanna Type Beat", "Alicia Keys Type Beat", "Daniel Caesar Type Beat", "Giveon Type Beat",
+      "Ari Lennox Type Beat", "Nicki Minaj Type Beat", "Cardi B Type Beat", "Megan Thee Stallion Type Beat",
+      "Doja Cat Type Beat", "Ice Spice Type Beat", "Saweetie Type Beat", "GloRilla Type Beat",
+      "Central Cee Type Beat", "Dave Type Beat", "Stormzy Type Beat", "Skepta Type Beat",
+      "J Hus Type Beat", "Headie One Type Beat", "Digga D Type Beat", "AJ Tracey Type Beat",
+      "Fredo Type Beat", "Giggs Type Beat", "Burna Boy Type Beat", "Wizkid Type Beat",
+      "Davido Type Beat", "Tems Type Beat", "Rema Type Beat", "Asake Type Beat", "Fireboy DML Type Beat",
+      "CKay Type Beat", "Omah Lay Type Beat", "Ayra Starr Type Beat", "Bad Bunny Type Beat",
+      "J Balvin Type Beat", "Ozuna Type Beat", "Anuel AA Type Beat", "Karol G Type Beat",
+      "Maluma Type Beat", "Daddy Yankee Type Beat", "Rauw Alejandro Type Beat", "Myke Towers Type Beat",
+      "Feid Type Beat", "Peso Pluma Type Beat", "Rosalía Type Beat", "Bizarrap Type Beat",
+      "Taylor Swift Type Beat", "Ariana Grande Type Beat", "Billie Eilish Type Beat", "Dua Lipa Type Beat",
+      "Ed Sheeran Type Beat", "Justin Bieber Type Beat", "Harry Styles Type Beat", "Olivia Rodrigo Type Beat",
+      "Sabrina Carpenter Type Beat", "Lady Gaga Type Beat", "Miley Cyrus Type Beat", "Selena Gomez Type Beat",
+      "Shawn Mendes Type Beat", "Charlie Puth Type Beat", "Tame Impala Type Beat", "The Neighbourhood Type Beat",
+      "Arctic Monkeys Type Beat", "Twenty One Pilots Type Beat", "Imagine Dragons Type Beat",
+      "Coldplay Type Beat", "The 1975 Type Beat", "Joji Type Beat", "Lorde Type Beat",
+      "Glass Animals Type Beat", "Calvin Harris Type Beat", "The Chainsmokers Type Beat",
+      "Marshmello Type Beat", "Kygo Type Beat", "Martin Garrix Type Beat", "David Guetta Type Beat",
+      "Skrillex Type Beat", "Diplo Type Beat", "Flume Type Beat", "Odesza Type Beat",
+      "Chief Keef Type Beat", "King Von Type Beat", "Fivio Foreign Type Beat", "Sheff G Type Beat",
+      "Sleepy Hallow Type Beat", "Kay Flock Type Beat", "G Herbo Type Beat", "42 Dugg Type Beat",
+      "Babyface Ray Type Beat", "Veeze Type Beat", "Baby Smoove Type Beat", "Rio Da Yung OG Type Beat",
+      "Migos Type Beat", "Quavo Type Beat", "Offset Type Beat", "Gucci Mane Type Beat",
+      "Young Nudy Type Beat", "Lil Yachty Type Beat", "Lil Peep Type Beat", "XXXTentacion Type Beat",
+      "Iann Dior Type Beat", "Destroy Lonely Type Beat", "SoFaygo Type Beat", "SSGKobe Type Beat",
+      "Summrs Type Beat", "Metro Boomin Type Beat", "Pierre Bourne Type Beat", "Wheezy Type Beat",
+      "Nick Mira Type Beat", "Kenny Beats Type Beat", "Mike Will Made-It Type Beat", "Murda Beatz Type Beat",
+      "Tay Keith Type Beat", "Southside Type Beat", "DJ Mustard Type Beat", "YG Type Beat",
+      "Schoolboy Q Type Beat", "Nipsey Hussle Type Beat", "Blxst Type Beat", "Ty Dolla Sign Type Beat",
+      "Larry June Type Beat", "Kodak Black Type Beat", "Rick Ross Type Beat", "Denzel Curry Type Beat",
+      "Rod Wave Type Beat", "Three 6 Mafia Type Beat", "Juicy J Type Beat", "Project Pat Type Beat",
+      "Vybz Kartel Type Beat", "Popcaan Type Beat", "Sean Paul Type Beat", "Shenseea Type Beat",
+      "Skillibeng Type Beat", "Morgan Wallen Type Beat", "Luke Combs Type Beat", "Kane Brown Type Beat",
+      "Chris Stapleton Type Beat", "BTS Type Beat", "BLACKPINK Type Beat", "Stray Kids Type Beat",
+      "NewJeans Type Beat", "Nujabes Type Beat", "J Dilla Type Beat", "MF DOOM Type Beat",
+      "Madlib Type Beat", "Meek Mill Type Beat", "Big Sean Type Beat", "Wiz Khalifa Type Beat",
+      "French Montana Type Beat", "Moneybagg Yo Type Beat", "EST Gee Type Beat", "Pooh Shiesty Type Beat",
+      "Key Glock Type Beat", "NLE Choppa Type Beat", "Lil Mosey Type Beat", "Lil Nas X Type Beat",
+      "Machine Gun Kelly Type Beat", "Logic Type Beat", "Cordae Type Beat", "JID Type Beat",
+      "Joey Bada$$ Type Beat", "Anderson .Paak Type Beat", "Baby Keem Type Beat", "Vince Staples Type Beat",
+      "Freddie Gibbs Type Beat", "Pusha T Type Beat", "Benny The Butcher Type Beat",
+      "Conway The Machine Type Beat", "Westside Gunn Type Beat", "Boldy James Type Beat",
+      "Tory Lanez Type Beat", "Nav Type Beat", "Swae Lee Type Beat", "Rae Sremmurd Type Beat",
+      "A Boogie Type Beat", "PnB Rock Type Beat", "Lil Skies Type Beat", "Ski Mask Type Beat",
+      "Smokepurpp Type Beat", "Lil Pump Type Beat",
     ],
   },
   {
     title: "Genre",
     options: [
-      "Trap",
-      "Hip Hop",
-      "R&B",
-      "Pop",
-      "Drill",
-      "Boom Bap",
-      "Lo-Fi",
-      "Alternative",
-      "Rock",
-      "Indie",
-      "Electronic",
-      "EDM",
-      "House",
-      "Techno",
-      "Dubstep",
-      "Jazz",
-      "Soul",
-      "Funk",
-      "Reggae",
-      "Dancehall",
-      "Afrobeat",
-      "Latin",
-      "Reggaeton",
-      "Bachata",
-      "Country",
-      "Folk",
-      "Experimental",
-      "Ambient",
-      "West-coast",
-      "East-coast",
-      "Southern",
-      "Midwest",
+      "Trap", "Hip Hop", "R&B", "Pop", "Drill", "Boom Bap", "Lo-Fi", "Alternative", "Rock", "Indie",
+      "Electronic", "EDM", "House", "Techno", "Dubstep", "Jazz", "Soul", "Funk", "Reggae", "Dancehall",
+      "Afrobeat", "Latin", "Reggaeton", "Bachata", "Country", "Folk", "Experimental", "Ambient",
+      "West-coast", "East-coast", "Southern", "Midwest",
     ],
   },
   {
     title: "Mood/Feel",
     options: [
-      "Dark",
-      "Chill",
-      "Aggressive",
-      "Emotional",
-      "Uplifting",
-      "Sad",
-      "Energetic",
-      "Melodic",
-      "Hard",
-      "Smooth",
-      "Atmospheric",
-      "Dreamy",
-      "Bouncy",
-      "Groovy",
-      "Intense",
-      "Relaxing",
-      "Motivational",
-      "Romantic",
-      "Angry",
-      "Happy",
+      "Dark", "Chill", "Aggressive", "Emotional", "Uplifting", "Sad", "Energetic", "Melodic", "Hard",
+      "Smooth", "Atmospheric", "Dreamy", "Bouncy", "Groovy", "Intense", "Relaxing", "Motivational",
+      "Romantic", "Angry", "Happy",
     ],
   },
   {
     title: "Key",
     options: [
-      "C Major",
-      "C Minor",
-      "D Major",
-      "D Minor",
-      "E Major",
-      "E Minor",
-      "F Major",
-      "F Minor",
-      "G Major",
-      "G Minor",
-      "A Major",
-      "A Minor",
-      "B Major",
-      "B Minor",
+      "C Major", "C Minor", "D Major", "D Minor", "E Major", "E Minor", "F Major", "F Minor",
+      "G Major", "G Minor", "A Major", "A Minor", "B Major", "B Minor",
     ],
   },
 ]
@@ -425,7 +140,7 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
       setSelectedKeys([])
       setShowFreeOnly(false)
     } else {
-      if (initialFilters.bpmRange) setBpmRange(initialFilters.bpmRange)
+      if (initialFilters.bpmRange) setBpmRange(initialFilters.bpmRange as [number, number])
       if (initialFilters.selectedTypeBeats) setSelectedTypeBeats(initialFilters.selectedTypeBeats)
       if (initialFilters.selectedGenres) setSelectedGenres(initialFilters.selectedGenres)
       if (initialFilters.selectedMoods) setSelectedMoods(initialFilters.selectedMoods)
@@ -442,7 +157,6 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
         const matchingTypeBeats = typeBeatSection.options.filter((option) => option.toLowerCase().includes(query))
         if (matchingTypeBeats.length > 0) {
           setSelectedTypeBeats(matchingTypeBeats)
-          console.log("[v0] Auto-selected type beats:", matchingTypeBeats)
         }
       }
     }
@@ -514,18 +228,21 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
             <p className="text-sm text-muted-foreground">
               Searching for: <span className="text-foreground font-semibold">{searchQuery}</span>
             </p>
-            {selectedTypeBeats.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {selectedTypeBeats.length} type beat{selectedTypeBeats.length > 1 ? "s" : ""} selected
-              </p>
-            )}
           </div>
         )}
 
         <div className="space-y-3 pb-4 border-b border-border">
           <Label className="text-sm font-semibold text-foreground">BPM Range</Label>
           <div className="space-y-2">
-            <Slider value={bpmRange} onValueChange={setBpmRange} min={60} max={200} step={1} className="w-full" />
+            {/* Fixed: explicit cast to [number, number] */}
+            <Slider 
+              value={bpmRange} 
+              onValueChange={(val) => setBpmRange(val as [number, number])} 
+              min={60} 
+              max={200} 
+              step={1} 
+              className="w-full" 
+            />
             <div className="flex items-center justify-between gap-2">
               <Input
                 type="number"
