@@ -23,23 +23,23 @@ const licenses: License[] = [
     name: "Pro",
     price: "$49.99",
     popular: true,
-    features: ["WAV Download", "For-Profit Use", "10,000 Streams", "Trackout Stems"],
+    features: ["WAV Download", "For-Profit Use", "10,000 Streams"],
   },
   {
     name: "Pro XL",
     price: "$99.97",
-    features: ["Unlimited Streams", "Unlimited Videos", "Distro: 5k Copies", "Trackout Stems"],
+    features: ["WAV + Trackout Stems", "Unlimited Streams", "Unlimited Videos", "Distro: 5k Copies"],
   },
   {
     name: "Premium",
     price: "$199.97",
-    features: ["Unlimited Everything", "All Files Included", "Highest Quality", "Radio Ready"],
+    features: ["WAV + Trackout Stems", "Unlimited Everything", "Highest Quality", "Radio Ready"],
   },
   {
     name: "Exclusive",
     price: "Inquire",
     isContact: true,
-    features: ["Full Ownership", "Removed From Store", "Contract Signed", "Buyout"],
+    features: ["Full Ownership", "Removed From Beat Store", "Contract Signed", "Buyout"],
   },
 ]
 
