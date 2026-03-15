@@ -2,10 +2,20 @@
 
 import { useEffect, Suspense, use } from "react"
 import Link from "next/link"
-import { CheckCircle2, Download, Music, ArrowRight } from "lucide-react"
+import { CheckCircle2, Music, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+
+/**
+ * FIX: This tells TypeScript that 'gtag' exists on the window object.
+ * This prevents the "Property 'gtag' does not exist" build error.
+ */
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
 
 interface SuccessPageProps {
   searchParams: Promise<{ session_id?: string }>
@@ -13,13 +23,14 @@ interface SuccessPageProps {
 
 function SuccessContent({ searchParams }: { searchParams: { session_id?: string } }) {
   useEffect(() => {
-    // This is where you trigger the "Purchase" Key Event for Google Analytics
+    // Check if window and gtag are available
     if (typeof window !== "undefined" && window.gtag) {
       window.gtag('event', 'purchase', {
         transaction_id: searchParams.session_id,
-        value: 30.00, // You can make this dynamic later
+        value: 30.00, // Hardcoded for now, but Google Ads will now see the conversion
         currency: 'USD'
       });
+      console.log("[v0] Purchase event tracked for session:", searchParams.session_id);
     }
   }, [searchParams.session_id]);
 
@@ -29,14 +40,14 @@ function SuccessContent({ searchParams }: { searchParams: { session_id?: string 
         <CheckCircle2 className="h-12 w-12 text-green-500" />
       </div>
       
-      <h1 className="mb-2 text-4xl font-bold text-foreground">Order Confirmed!</h1>
-      <p className="mb-8 text-muted-foreground max-w-md">
+      <h1 className="text-4xl font-bold text-foreground mb-2">Order Confirmed!</h1>
+      <p className="text-muted-foreground max-w-md mb-8">
         Your payment was successful. A receipt and your license files have been sent to your email.
       </p>
 
       <div className="grid w-full max-w-md gap-4">
         <div className="rounded-xl border border-border bg-card p-6 text-left">
-          <h3 className="mb-4 font-semibold flex items-center gap-2">
+          <h3 className="font-semibold flex items-center gap-2 mb-4 text-foreground">
             <Music className="h-4 w-4 text-primary" /> Next Steps
           </h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
@@ -55,22 +66,22 @@ function SuccessContent({ searchParams }: { searchParams: { session_id?: string 
           </ul>
         </div>
 
-        {/* The "ROI" Section: Discount for next time */}
+        {/* ROI Section: Encouraging the second purchase immediately */}
         <div className="rounded-xl bg-primary/10 border border-primary/20 p-6 text-center">
           <p className="text-xs uppercase tracking-widest text-primary font-bold mb-1">Loyalty Bonus</p>
-          <p className="text-sm mb-3">Get 20% off your next beat with code:</p>
+          <p className="text-sm mb-3 text-foreground">Get 20% off your next beat with code:</p>
           <div className="bg-background border border-dashed border-primary/50 py-2 rounded font-mono text-xl text-primary mb-4">
             FREEZY20
           </div>
           <Link href="/beats">
-            <Button variant="link" className="text-primary">
+            <Button variant="link" className="text-primary hover:no-underline">
               Browse More Beats <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
 
         <Link href="/">
-          <Button className="w-full py-6 text-lg">Back to Home</Button>
+          <Button className="w-full py-6 text-lg font-bold">Back to Home</Button>
         </Link>
       </div>
     </div>
@@ -84,7 +95,11 @@ export default function SuccessPage(props: SuccessPageProps) {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4">
-        <Suspense fallback={<div className="py-20 text-center">Loading your order...</div>}>
+        <Suspense fallback={
+          <div className="py-20 text-center text-muted-foreground">
+            Loading your order confirmation...
+          </div>
+        }>
           <SuccessContent searchParams={searchParams} />
         </Suspense>
       </main>
