@@ -49,17 +49,35 @@ interface LicenseModalProps {
   beatTitle: string
   beatBpm: number
   beatImage: string
+  // Added the prices prop to receive IDs from your Notion database
+  prices: {
+    basic: { id: string; amount: number }
+    pro: { id: string; amount: number }
+    proXl: { id: string; amount: number }
+    premium: { id: string; amount: number }
+  }
 }
 
-export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage }: LicenseModalProps) {
+export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage, prices }: LicenseModalProps) {
   const router = useRouter()
 
   const handlePurchase = (license: License) => {
+    // 1. Map the clicked license name to the key in our prices object
+    let licenseKey: "basic" | "pro" | "proXl" | "premium" = "basic"
+    
+    if (license.name === "Pro") licenseKey = "pro"
+    if (license.name === "Pro XL") licenseKey = "proXl"
+    if (license.name === "Premium") licenseKey = "premium"
+
+    // 2. Get the specific Stripe Price ID from Notion data
+    const stripePriceId = prices ? prices[licenseKey]?.id : ""
+
     const params = new URLSearchParams({
       title: beatTitle,
       bpm: beatBpm.toString(),
       image: beatImage,
       license: license.name,
+      priceId: stripePriceId, // Passing the ID here fixes the "Price ID missing" error
     })
 
     if (license.isContact) {
@@ -93,7 +111,7 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage }:
           </div>
         </div>
 
-        {/* License Grid - 5 columns on desktop, horizontal scroll on mobile */}
+        {/* License Grid */}
         <div className="p-4 lg:p-8 overflow-x-auto custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 min-w-[1000px] lg:min-w-0 pb-4">
             {licenses.map((license) => (
