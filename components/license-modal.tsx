@@ -13,12 +13,12 @@ interface License {
 const licenses: License[] = [
   {
     name: "Basic",
-    price: "$30",
+    price: "$29.99",
     features: ["MP3 Download", "Non-Profit Use", "2,000 Streams", "1 Music Video", "Tagged Version"],
   },
   {
     name: "Pro",
-    price: "$75",
+    price: "$49.99",
     features: [
       "WAV Download",
       "For-Profit Use",
@@ -30,7 +30,7 @@ const licenses: License[] = [
   },
   {
     name: "Pro XL",
-    price: "$100",
+    price: "$99.97",
     features: [
       "WAV Download",
       "Trackout Stems",
