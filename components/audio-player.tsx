@@ -201,6 +201,8 @@ export function AudioPlayer() {
           beatTitle={currentBeat.title}
           beatBpm={currentBeat.bpm}
           beatImage={currentBeat.image}
+          // ADDED THIS LINE TO FIX THE BUILD ERROR
+          prices={currentBeat.prices}
         />
       )}
     </>
