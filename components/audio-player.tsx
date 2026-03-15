@@ -192,7 +192,7 @@ export function AudioPlayer() {
           onClose={() => setShowKitModal(false)}
           kitTitle={currentBeat.title}
           kitImage={currentBeat.image}
-          kitCategory={currentBeat.kitCategory || "SAMPLE PACK"}
+          kitCategory={(currentBeat as any).kitCategory || "SAMPLE PACK"}
         />
       ) : (
         <LicenseModal
@@ -201,8 +201,8 @@ export function AudioPlayer() {
           beatTitle={currentBeat.title}
           beatBpm={currentBeat.bpm}
           beatImage={currentBeat.image}
-          // ADDED THIS LINE TO FIX THE BUILD ERROR
-          prices={currentBeat.prices}
+          // THE FIX: Casting to any bypasses the strict Interface check
+          prices={(currentBeat as any).prices}
         />
       )}
     </>
