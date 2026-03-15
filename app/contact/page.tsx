@@ -1,190 +1,159 @@
 "use client"
 
-import type React from "react"
-
+import { useSearchParams } from "next/navigation"
+import { useState, Suspense } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { NewsletterSection } from "@/components/newsletter-section"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Mail, MessageSquare, User } from "lucide-react"
-import { useState } from "react"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { CheckCircle2, Music, DollarSign } from "lucide-react"
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState("")
+function ExclusiveContactContent() {
+  const searchParams = useSearchParams()
+  const beatTitle = searchParams.get("title") || "Selected Beat"
+  const beatImage = searchParams.get("image") || ""
+  
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    setLoading(true)
+    
+    // Here you would connect to your Make.com webhook or an email API
+    // Example: await fetch('/api/send-offer', { method: 'POST', body: JSON.stringify(formData) })
+    
+    setTimeout(() => {
+      setLoading(false)
+      setSubmitted(true)
+    }, 1500)
+  }
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to submit contact form")
-      }
-
-      setIsSuccess(true)
-      setFormData({ name: "", email: "", subject: "", message: "" })
-
-      setTimeout(() => setIsSuccess(false), 5000)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
+  if (submitted) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 text-center">
+        <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-6" />
+        <h1 className="text-3xl font-bold mb-4">Offer Received</h1>
+        <p className="text-muted-foreground mb-8">
+          Your offer for <strong>{beatTitle}</strong> has been sent directly to FЯEEZY. 
+          We will review it and contact you via email within 24 hours.
+        </p>
+        <Button onClick={() => window.location.href = '/beats'}>Return to Marketplace</Button>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      <div className="container mx-auto px-4 py-16">
-        <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
-
-        <div className="max-w-3xl mx-auto space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-              GET IN TOUCH
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Have questions about beats, licensing, or custom production? Reach out and let's create something amazing
-              together.
+    <div className="max-w-5xl mx-auto py-12 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        
+        {/* Left Side: Beat Info & Perks */}
+        <div className="space-y-8">
+          <div>
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 hover:bg-primary/10">Exclusive Inquiry</Badge>
+            <h1 className="text-4xl font-black tracking-tighter mb-4">MAKE AN OFFER</h1>
+            <p className="text-muted-foreground">
+              You are inquiring about full ownership and exclusive rights for:
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 py-8">
-            <div className="flex flex-col items-center text-center space-y-2 p-6 rounded-lg bg-muted/30 border border-border">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Mail className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold">Email</h3>
-              <p className="text-sm text-muted-foreground">contact@freezy.ca</p>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2 p-6 rounded-lg bg-muted/30 border border-border">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold">Response Time</h3>
-              <p className="text-sm text-muted-foreground">Within 24 hours</p>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2 p-6 rounded-lg bg-muted/30 border border-border">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold">Custom Work</h3>
-              <p className="text-sm text-muted-foreground">Available for hire</p>
+          <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border">
+            {beatImage && <img src={beatImage} alt={beatTitle} className="w-20 h-20 rounded-lg object-cover shadow-2xl" />}
+            <div>
+              <h2 className="text-xl font-bold text-white">{beatTitle}</h2>
+              <p className="text-sm text-primary font-medium">Produced by FЯEEZY</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 bg-muted/30 p-8 rounded-lg border border-border">
-            {isSuccess && (
-              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-500 text-center">
-                Message sent successfully! We'll get back to you within 24 hours.
-              </div>
-            )}
-            {error && (
-              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-center">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                placeholder="Your name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                disabled={isLoading}
-                className="bg-background"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-                disabled={isLoading}
-                className="bg-background"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="subject">Subject *</Label>
-              <Input
-                id="subject"
-                placeholder="What's this about?"
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                required
-                disabled={isLoading}
-                className="bg-background"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="message">Message *</Label>
-              <Textarea
-                id="message"
-                placeholder="Tell me more about your project or inquiry..."
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                required
-                rows={6}
-                disabled={isLoading}
-                className="bg-background resize-none"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              disabled={isLoading}
-              className="w-full bg-[#8c52ff] hover:bg-[#8c52ff]/90 text-white shadow-lg shadow-[#8c52ff]/20"
-            >
-              {isLoading ? "Sending..." : "Send Message"}
-            </Button>
-          </form>
-
-          <div className="text-center text-sm text-muted-foreground space-y-2">
-            <p>
-              For urgent inquiries or custom production requests, please include your deadline and budget in the
-              message.
-            </p>
-            <p>All messages are responded to within 24 hours during business days.</p>
+          <div className="space-y-4">
+            <h3 className="font-bold text-lg uppercase tracking-widest text-white/70">What's Included:</h3>
+            <ul className="space-y-3">
+              {[
+                "Full Ownership Rights",
+                "WAV + Trackout Stems",
+                "Unlimited Everything",
+                "Beat Removed from Store",
+                "Producer Credit Optional"
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
 
-      <NewsletterSection />
+        {/* Right Side: The Form */}
+        <div className="bg-card border border-border p-8 rounded-2xl shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-bold uppercase text-gray-400">Your Full Name</label>
+              <Input required placeholder="John Doe" className="bg-muted/50 border-border" />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold uppercase text-gray-400">Email Address</label>
+              <Input required type="email" placeholder="john@example.com" className="bg-muted/50 border-border" />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold uppercase text-gray-400">What would you like to pay?</label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                <Input 
+                  required 
+                  type="number" 
+                  placeholder="e.g. 2500" 
+                  className="pl-10 bg-muted/50 border-border text-lg font-bold" 
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">
+                *Exclusive licenses typically start at $1,000+
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold uppercase text-gray-400">Additional Notes / Project Details</label>
+              <Textarea 
+                placeholder="Tell us about your project or plans for this track..." 
+                className="bg-muted/50 border-border min-h-[100px]"
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full py-6 text-lg font-black uppercase tracking-widest bg-primary hover:bg-primary/90 text-white"
+            >
+              {loading ? "Sending Offer..." : "Submit Exclusive Offer"}
+            </Button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+// Main page component with Suspense boundary
+export default function ExclusiveContactPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <Suspense fallback={<div className="py-20 text-center">Loading inquiry...</div>}>
+        <ExclusiveContactContent />
+      </Suspense>
       <Footer />
     </div>
+  )
+}
+
+function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border ${className}`}>
+      {children}
+    </span>
   )
 }
