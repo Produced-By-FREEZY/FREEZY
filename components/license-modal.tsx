@@ -49,7 +49,6 @@ interface LicenseModalProps {
   beatTitle: string
   beatBpm: number
   beatImage: string
-  // Added the prices prop to receive IDs from your Notion database
   prices: {
     basic: { id: string; amount: number }
     pro: { id: string; amount: number }
@@ -77,7 +76,7 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage, p
       bpm: beatBpm.toString(),
       image: beatImage,
       license: license.name,
-      priceId: stripePriceId, // Passing the ID here fixes the "Price ID missing" error
+      priceId: stripePriceId,
     })
 
     if (license.isContact) {
@@ -90,84 +89,83 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage, p
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] lg:max-w-[1200px] bg-[#0a0a0a] border-white/10 p-0 overflow-hidden border-none shadow-2xl">
+      <DialogContent className="max-w-[95vw] lg:max-w-[1200px] bg-[#050505] border-white/10 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,1)] border-none">
         
-        {/* Header Section */}
-        <div className="p-6 border-b border-white/5 bg-gradient-to-r from-black to-[#111]">
-          <div className="flex items-center gap-4">
-            <img 
-              src={beatImage || "/placeholder.svg"} 
-              alt={beatTitle} 
-              className="w-16 h-16 rounded-md object-cover ring-1 ring-white/20 shadow-2xl" 
-            />
+        {/* Modern Header Section */}
+        <div className="p-8 border-b border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent">
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <img 
+                src={beatImage || "/placeholder.svg"} 
+                alt={beatTitle} 
+                className="w-20 h-20 rounded-xl object-cover ring-1 ring-white/20 shadow-2xl" 
+              />
+              <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl -z-10 animate-pulse" />
+            </div>
             <div>
-              <DialogTitle className="text-2xl font-black text-white uppercase tracking-tighter">
+              <DialogTitle className="text-3xl font-black text-white uppercase tracking-tighter">
                 Select License
               </DialogTitle>
-              <p className="text-sm text-gray-400 font-medium">
-                {beatTitle} <span className="text-primary/60 ml-2">// {beatBpm} BPM</span>
+              <p className="text-gray-400 font-medium tracking-wide">
+                {beatTitle} <span className="text-primary mx-2">|</span> {beatBpm} BPM
               </p>
             </div>
           </div>
         </div>
 
         {/* License Grid */}
-        <div className="p-4 lg:p-8 overflow-x-auto custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 min-w-[1000px] lg:min-w-0 pb-4">
+        <div className="p-6 lg:p-10 overflow-x-auto custom-scrollbar bg-black">
+          <div className="flex lg:grid lg:grid-cols-5 gap-5 min-w-max lg:min-w-0 pb-4">
             {licenses.map((license) => (
               <div
                 key={license.name}
-                className={`relative group flex flex-col p-6 rounded-2xl transition-all duration-300 border ${
+                className={`relative group flex flex-col p-7 rounded-2xl transition-all duration-500 border ${
                   license.popular 
-                    ? "bg-white/[0.03] border-primary/50 shadow-[0_0_40px_-15px_rgba(140,82,255,0.3)] scale-[1.02] z-10" 
-                    : license.isContact 
-                    ? "bg-primary/5 border-primary/20" 
-                    : "bg-white/[0.01] border-white/5 hover:border-white/20"
+                    ? "bg-[#0a0a0a] border-primary shadow-[0_0_30px_-10px_rgba(140,82,255,0.4)] scale-105 z-10" 
+                    : "bg-[#080808] border-white/5 hover:border-white/20"
                 }`}
               >
                 {license.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-[10px] font-black px-3 py-1 rounded-full uppercase text-white tracking-widest shadow-xl">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-[10px] font-black px-4 py-1.5 rounded-full uppercase text-white tracking-[0.2em] shadow-lg">
                     Best Value
                   </div>
                 )}
 
                 <div className="mb-8">
-                  <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] mb-2 ${license.popular ? "text-primary" : "text-gray-500"}`}>
+                  <h3 className={`text-[11px] font-bold uppercase tracking-[0.3em] mb-3 ${license.popular ? "text-primary" : "text-gray-500"}`}>
                     {license.name}
                   </h3>
-                  <p className="text-3xl font-black text-white tracking-tighter">
+                  <p className="text-4xl font-black text-white tracking-tighter">
                     {license.price}
                   </p>
                 </div>
 
                 <ul className="space-y-4 mb-10 flex-1">
                   {license.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-[11px] text-gray-400 group-hover:text-gray-200 transition-colors">
-                      <Check className="w-3 h-3 text-primary flex-shrink-0" />
-                      <span className="leading-tight">{feature}</span>
+                    <li key={feature} className="flex items-start gap-3 text-[12px] text-gray-400 leading-tight">
+                      <Check className={`w-4 h-4 shrink-0 ${license.popular ? "text-primary" : "text-gray-600"}`} />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
                   onClick={() => handlePurchase(license)}
-                  className={`w-full py-6 font-bold uppercase tracking-widest text-[10px] rounded-xl transition-all ${
+                  className={`w-full py-7 font-black uppercase tracking-[0.15em] text-[11px] rounded-xl transition-all duration-300 ${
                     license.popular 
-                      ? "bg-primary hover:bg-primary/80 text-white shadow-lg shadow-primary/20" 
-                      : license.isContact
-                      ? "bg-white text-black hover:bg-gray-200"
+                      ? "bg-primary hover:bg-primary/80 text-white shadow-[0_10px_20px_-5px_rgba(140,82,255,0.5)]" 
                       : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                   }`}
                 >
-                  {license.isContact ? "Inquire" : "Select"}
+                  {license.isContact ? "Contact Me" : "Select License"}
                 </Button>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="p-4 text-center bg-black/50 border-t border-white/5">
-          <p className="text-[10px] text-gray-600 uppercase tracking-widest font-medium">
+        <div className="p-5 text-center bg-[#050505] border-t border-white/5">
+          <p className="text-[10px] text-gray-600 uppercase tracking-[0.3em] font-bold">
             Secure checkout via Stripe // Instant high-quality delivery
           </p>
         </div>
