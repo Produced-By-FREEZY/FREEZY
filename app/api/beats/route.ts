@@ -98,8 +98,13 @@ export async function GET(request: Request) {
         id: page.id,
         title: beatName || "Untitled Beat",
         artist: getText(props["Produced by"]) || "FЯEEZY",
-        // Fallback price string for simple displays
+        
+        /** * SAFETY PATCH: 
+         * This provides the legacy 'price' string so the UI doesn't crash 
+         * when looking for beat.price
+         */
         price: isFree ? "FREE" : `$${basicPrice.toFixed(2)}`,
+        
         bpm: getNumber(props["BPM"]),
         musicalKey: getText(props["Key"]),
         genres: genres,
