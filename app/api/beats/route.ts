@@ -9,11 +9,11 @@ export async function GET(request: Request) {
     const databaseId = process.env.NOTION_BEATS_DATABASE_ID
 
     if (!notionApiKey || !databaseId) {
-      console.log("[v0] Missing environment variables - returning empty array")
+      console.error("[v0] Missing Notion Environment Variables")
       return NextResponse.json({ beats: [] })
     }
 
-    // Sort by "Created time" as seen in your Notion CSV
+    // Query Notion using the exact property name for sorting from your CSV
     const requestBody: any = {
       sorts: [
         {
@@ -26,9 +26,7 @@ export async function GET(request: Request) {
     if (featuredOnly) {
       requestBody.filter = {
         property: "IsFeatured",
-        checkbox: {
-          equals: true,
-        },
+        checkbox: { equals: true },
       }
     }
 
@@ -45,7 +43,8 @@ export async function GET(request: Request) {
     if (!response.ok) {
       const errorText = await response.text()
       console.error("[v0] Notion API error:", response.status, errorText)
-      return NextResponse.json({ error: "Failed to fetch from Notion" }, { status: response.status })
+      // Return empty array instead of error object to prevent frontend crashes
+      return NextResponse.json({ beats: [] })
     }
 
     const data = await response.json()
@@ -53,7 +52,7 @@ export async function GET(request: Request) {
     const beats = data.results.map((page: any) => {
       const props = page.properties
 
-      // Robust helper to extract text from various Notion property types
+      // Helper to safely get text values
       const getText = (prop: any): string => {
         if (!prop) return ""
         if (prop.type === "rich_text") return prop.rich_text[0]?.plain_text || ""
@@ -62,75 +61,65 @@ export async function GET(request: Request) {
         return ""
       }
 
+      // Helper to safely get numeric values
       const getNumber = (prop: any): number => {
         if (!prop || prop.type !== "number") return 0
         return prop.number || 0
       }
 
-      const getCheckbox = (prop: any): boolean => {
-        if (!prop || prop.type !== "checkbox") return false
-        return prop.checkbox || false
-      }
+      // 1. SAFE DATA EXTRACTION (with fallbacks)
+      const beatName = getText(props["Beat name"]) || "Untitled Beat"
+      const basicPrice = getNumber(props["Basic Price"]) || 29.99
+      const isFree = props["IsFree"]?.checkbox || false
 
-      // Handle Genres (Multi-select)
+      // 2. SAFE ARRAY EXTRACTION (Prevents .map errors on frontend)
       const genres = props["Genres"]?.multi_select?.map((g: any) => g.name) || []
-
-      // Handle Moods (Comma separated text in your CSV)
       const moodsText = getText(props["Moods"])
       const moods = moodsText ? moodsText.split(",").map((m: string) => m.trim()) : []
+      const tagsText = getText(props["Tags"])
+      const tags = tagsText ? tagsText.split(",").map((t: string) => t.trim()) : []
 
-      // Extract Price IDs exactly as named in your Notion CSV
-      const basicPriceId = getText(props["Basic Price ID"])
-      const proPriceId = getText(props["Pro Price ID"])
-      const proXlPriceId = getText(props["Pro XL Price ID"])
-      const premiumPriceId = getText(props["Premium Price ID"])
-
-      // Extract Numeric Prices for display
-      const basicPrice = getNumber(props["Basic Price"]) || 29.99
-      const proPrice = getNumber(props["Pro Price"]) || 49.99
-      const proXlPrice = getNumber(props["Pro XL Price"]) || 99.97
-      const premiumPrice = getNumber(props["Premium Price"]) || 199.97
-
-      const beatName = getText(props["Beat name"])
-      const isFree = getCheckbox(props["IsFree"])
+      // 3. SOUNDSLIKE FALLBACK
+      const soundsLike: string[] = []
+      for (let i = 1; i <= 5; i++) {
+        const val = getText(props[`SoundsLike ${i}`])
+        if (val) soundsLike.push(val)
+      }
 
       return {
         id: page.id,
-        title: beatName || "Untitled Beat",
+        title: beatName,
         artist: getText(props["Produced by"]) || "FЯEEZY",
         
-        /** * SAFETY PATCH: 
-         * This provides the legacy 'price' string so the UI doesn't crash 
-         * when looking for beat.price
-         */
+        // LEGACY FIELD: Keeps the marketplace from crashing
         price: isFree ? "FREE" : `$${basicPrice.toFixed(2)}`,
         
-        bpm: getNumber(props["BPM"]),
-        musicalKey: getText(props["Key"]),
+        bpm: getNumber(props["BPM"]) || 0,
+        musicalKey: getText(props["Key"]) || "N/A",
         genres: genres,
-        image: getText(props["IMG URL"]) || "/placeholder.svg",
-        audioUrl: getText(props["MP3 URL"]),
-        isFree: isFree,
-        isFeatured: getCheckbox(props["IsFeatured"]),
         mood: moods,
-        typeBeat: getText(props["TypeBeat"]),
+        tags: tags,
+        soundsLike: soundsLike,
+        image: getText(props["IMG URL"]) || "/placeholder.svg",
+        audioUrl: getText(props["MP3 URL"]) || "",
+        isFree: isFree,
+        isFeatured: props["IsFeatured"]?.checkbox || false,
+        typeBeat: getText(props["TypeBeat"]) || "",
         
-        // This is the critical object that fixes "Failed to initialize checkout"
+        // CHECKOUT OBJECT: Critical for the License Modal
         prices: {
-          basic: { id: basicPriceId, amount: basicPrice },
-          pro: { id: proPriceId, amount: proPrice },
-          proXl: { id: proXlPriceId, amount: proXlPrice },
-          premium: { id: premiumPriceId, amount: premiumPrice }
+          basic: { id: getText(props["Basic Price ID"]), amount: basicPrice },
+          pro: { id: getText(props["Pro Price ID"]), amount: getNumber(props["Pro Price"]) || 49.99 },
+          proXl: { id: getText(props["Pro XL Price ID"]), amount: getNumber(props["Pro XL Price"]) || 99.97 },
+          premium: { id: getText(props["Premium Price ID"]), amount: getNumber(props["Premium Price"]) || 199.97 }
         }
       }
     })
 
     return NextResponse.json({ beats })
   } catch (error: any) {
-    console.error("[v0] Error in beats API:", error)
-    return NextResponse.json(
-      { error: "Internal server error", message: error.message },
-      { status: 500 }
-    )
+    console.error("[v0] Critical API Error:", error.message)
+    // Return empty array on crash to allow frontend to stay alive
+    return NextResponse.json({ beats: [] })
   }
 }
