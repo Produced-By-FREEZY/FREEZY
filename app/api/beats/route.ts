@@ -8,7 +8,6 @@ export async function GET(request: Request) {
     const notionApiKey = process.env.NOTION_API_KEY
     const databaseId = process.env.NOTION_BEATS_DATABASE_ID
 
-    // Safety check for Environment Variables
     if (!notionApiKey || !databaseId) {
       console.error("[API] Missing Notion Environment Variables")
       return NextResponse.json({ beats: [] })
@@ -51,7 +50,6 @@ export async function GET(request: Request) {
     const beats = (data.results || []).map((page: any) => {
       const props = page.properties || {}
 
-      // Robust helper to extract text from various Notion property types
       const getText = (prop: any): string => {
         if (!prop) return ""
         if (prop.type === "rich_text") return prop.rich_text[0]?.plain_text || ""
@@ -65,15 +63,23 @@ export async function GET(request: Request) {
         return prop.number || 0
       }
 
-      // Extract raw values with hard fallbacks to prevent frontend crashes
       const beatName = getText(props["Beat name"]) || "Untitled Beat"
+      
+      // Pull IDs from Notion Columns (Matched to your screenshot)
+      const basicId = getText(props["Basic Price ID"])
+      const proId = getText(props["Pro Price ID"])
+      const proXlId = getText(props["Pro XL Price ID"])
+      const premiumId = getText(props["Premium Price ID"])
+
+      // Numeric prices
       const basicPrice = getNumber(props["Basic Price"]) || 29.99
       const proPrice = getNumber(props["Pro Price"]) || 49.99
       const proXlPrice = getNumber(props["Pro XL Price"]) || 99.97
       const premiumPrice = getNumber(props["Premium Price"]) || 199.97
+
       const isFree = props["IsFree"]?.checkbox || false
 
-      // Safely handle arrays (Crucial for preventing .map errors)
+      // Safely handle arrays
       const genres = props["Genres"]?.multi_select?.map((g: any) => g.name) || []
       const moodsText = getText(props["Moods"])
       const moods = moodsText ? moodsText.split(",").map((m: string) => m.trim()).filter(Boolean) : []
@@ -81,30 +87,28 @@ export async function GET(request: Request) {
       const tags = tagsText ? tagsText.split(",").map((t: string) => t.trim()).filter(Boolean) : []
 
       return {
-        id: page.id || Math.random().toString(),
+        id: page.id,
         title: beatName,
         artist: getText(props["Produced by"]) || "FЯEEZY",
-        
-        // LEGACY DISPLAY PRICE (Used by the Marketplace Grid)
         price: isFree ? "FREE" : `$${basicPrice.toFixed(2)}`,
-        
         bpm: getNumber(props["BPM"]) || 0,
         musicalKey: getText(props["Key"]) || "N/A",
-        genres: genres,
+        genres,
         mood: moods,
-        tags: tags,
+        tags,
         image: getText(props["IMG URL"]) || "/placeholder.svg",
         audioUrl: getText(props["MP3 URL"]) || "",
-        isFree: isFree,
+        isFree,
         isFeatured: props["IsFeatured"]?.checkbox || false,
         typeBeat: getText(props["TypeBeat"]) || "",
         
-        // STRIPE CHECKOUT OBJECT (Used by the License Modal)
+        // This structure allows your LicenseModal to pick the specific ID 
+        // string (e.g., prices.pro.id) instead of an object.
         prices: {
-          basic: { id: getText(props["Basic Price ID"]), amount: basicPrice },
-          pro: { id: getText(props["Pro Price ID"]), amount: proPrice },
-          proXl: { id: getText(props["Pro XL Price ID"]), amount: proXlPrice },
-          premium: { id: getText(props["Premium Price ID"]), amount: premiumPrice }
+          basic: { id: basicId, amount: basicPrice },
+          pro: { id: proId, amount: proPrice },
+          proXl: { id: proXlId, amount: proXlPrice },
+          premium: { id: premiumId, amount: premiumPrice }
         }
       }
     })
@@ -112,7 +116,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ beats })
   } catch (error: any) {
     console.error("[API] Critical Failure:", error.message)
-    // Return empty list so the UI shows "No beats" instead of crashing
     return NextResponse.json({ beats: [] })
   }
 }
