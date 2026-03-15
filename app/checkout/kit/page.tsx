@@ -21,6 +21,7 @@ function KitCheckoutContent() {
   const [fileSize, setFileSize] = useState("")
   const [itemCount, setItemCount] = useState(0)
   const [fileTypes, setFileTypes] = useState("")
+  const [priceId, setPriceId] = useState("") // Added state for priceId
 
   useEffect(() => {
     const title = searchParams.get("title") || ""
@@ -31,6 +32,7 @@ function KitCheckoutContent() {
     const size = searchParams.get("fileSize") || ""
     const count = Number.parseInt(searchParams.get("itemCount") || "0")
     const types = searchParams.get("fileTypes") || ""
+    const pid = searchParams.get("priceId") || "" // Extract priceId from URL
 
     setKitTitle(title)
     setKitImage(image)
@@ -40,6 +42,7 @@ function KitCheckoutContent() {
     setFileSize(size)
     setItemCount(count)
     setFileTypes(types)
+    setPriceId(pid)
   }, [searchParams])
 
   if (!kitTitle || kitPrice === 0) {
@@ -91,10 +94,10 @@ function KitCheckoutContent() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Order Summary */}
             <div className="space-y-6">
-              <h1 className="text-3xl font-bold text-foreground">Checkout</h1>
+              <h1 className="text-3xl font-bold text-foreground text-white">Checkout</h1>
 
               <Card className="p-6 bg-card border-border space-y-6">
-                <h2 className="text-xl font-bold text-foreground">Order Summary</h2>
+                <h2 className="text-xl font-bold text-white">Order Summary</h2>
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
@@ -104,7 +107,7 @@ function KitCheckoutContent() {
                       className="w-24 h-24 rounded object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg text-foreground">{kitTitle}</h3>
+                      <h3 className="font-bold text-lg text-white">{kitTitle}</h3>
                       <p className="text-sm text-muted-foreground mt-1">Produced by: FЯEEZY</p>
                       <div className="mt-2">
                         <span className="inline-block bg-[#8c52ff]/20 text-[#8c52ff] px-3 py-1 text-xs font-bold rounded uppercase">
@@ -121,15 +124,15 @@ function KitCheckoutContent() {
                   )}
 
                   {(fileSize || itemCount > 0) && (
-                    <div className="grid grid-cols-2 gap-3 px-4 py-3 bg-muted/30 rounded-lg">
+                    <div className="grid grid-cols-2 gap-3 px-4 py-3 bg-muted/30 rounded-lg border border-border/50">
                       {fileSize && (
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 rounded-full bg-[#8c52ff]/10 flex items-center justify-center flex-shrink-0">
                             <HardDrive className="w-4 h-4 text-[#8c52ff]" />
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">File Size</p>
-                            <p className="text-sm font-semibold text-foreground">{fileSize}</p>
+                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">File Size</p>
+                            <p className="text-sm font-semibold text-white">{fileSize}</p>
                           </div>
                         </div>
                       )}
@@ -139,8 +142,8 @@ function KitCheckoutContent() {
                             <Hash className="w-4 h-4 text-[#8c52ff]" />
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Total Items</p>
-                            <p className="text-sm font-semibold text-foreground">{itemCount} Files</p>
+                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Total Items</p>
+                            <p className="text-sm font-semibold text-white">{itemCount} Files</p>
                           </div>
                         </div>
                       )}
@@ -148,7 +151,7 @@ function KitCheckoutContent() {
                   )}
 
                   <div className="space-y-3 pt-4">
-                    <p className="text-sm font-semibold text-foreground uppercase tracking-wide">What's Included</p>
+                    <p className="text-sm font-semibold text-white uppercase tracking-wide">What's Included</p>
                     <div className="space-y-3">
                       {kitIncludes.map((item) => {
                         const Icon = item.icon
@@ -157,7 +160,7 @@ function KitCheckoutContent() {
                             <div className="w-8 h-8 rounded-full bg-[#8c52ff]/10 flex items-center justify-center flex-shrink-0">
                               <Icon className="w-4 h-4 text-[#8c52ff]" />
                             </div>
-                            <span className="text-sm text-foreground">{item.text}</span>
+                            <span className="text-sm text-gray-300">{item.text}</span>
                           </div>
                         )
                       })}
@@ -166,10 +169,10 @@ function KitCheckoutContent() {
 
                   <div className="border-t border-border pt-6 mt-6">
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold text-foreground">Total</span>
+                      <span className="text-lg font-semibold text-white">Total</span>
                       <span className="text-2xl font-bold text-[#8c52ff]">${kitPrice.toFixed(2)}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">One-time payment • No subscriptions</p>
+                    <p className="text-xs text-muted-foreground mt-2 italic font-medium">One-time payment • No subscriptions</p>
                   </div>
                 </div>
               </Card>
@@ -177,9 +180,11 @@ function KitCheckoutContent() {
 
             {/* Payment Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-foreground">Payment</h2>
+              <h2 className="text-xl font-bold text-white">Payment</h2>
               <Card className="p-6 bg-card border-border">
+                {/* Fixed: Now passing priceId to satisfy the StripeCheckout interface */}
                 <StripeCheckout
+                  priceId={priceId}
                   productName={kitTitle}
                   productDescription={kitDescription || `${kitCategory || "Sample Pack"} produced by FЯEEZY`}
                   priceInCents={Math.round(kitPrice * 100)}
@@ -203,7 +208,7 @@ export default function KitCheckoutPage() {
           <Header />
           <div className="min-h-screen bg-background flex items-center justify-center">
             <div className="text-center">
-              <p className="text-muted-foreground">Loading checkout...</p>
+              <p className="text-muted-foreground animate-pulse">Loading checkout...</p>
             </div>
           </div>
           <Footer />
