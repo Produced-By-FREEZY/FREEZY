@@ -121,12 +121,13 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage, p
                 key={license.name}
                 className={`relative group flex flex-col p-7 rounded-2xl transition-all duration-500 border ${
                   license.popular 
-                    ? "bg-[#0a0a0a] border-primary shadow-[0_0_30px_-10px_rgba(140,82,255,0.4)] scale-105 z-10" 
+                    ? "bg-[#ffffff] border-primary shadow-[0_0_30px_-10px_rgba(140,82,255,0.4)] scale-105 z-10" 
                     : "bg-[#080808] border-white/5 hover:border-white/20"
                 }`}
               >
                 {license.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-[10px] font-black px-4 py-1.5 rounded-full uppercase text-white tracking-[0.2em] shadow-lg">
+                  /* Changed text-white to text-black for the badge */
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-[10px] font-black px-4 py-1.5 rounded-full uppercase text-black tracking-[0.2em] shadow-lg">
                     Best Value
                   </div>
                 )}
@@ -135,14 +136,15 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage, p
                   <h3 className={`text-[11px] font-bold uppercase tracking-[0.3em] mb-3 ${license.popular ? "text-primary" : "text-gray-500"}`}>
                     {license.name}
                   </h3>
-                  <p className="text-4xl font-black text-white tracking-tighter">
+                  {/* Changed text color based on popular status */}
+                  <p className={`text-4xl font-black tracking-tighter ${license.popular ? "text-black" : "text-white"}`}>
                     {license.price}
                   </p>
                 </div>
 
                 <ul className="space-y-4 mb-10 flex-1">
                   {license.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-[12px] text-gray-400 leading-tight">
+                    <li key={feature} className={`flex items-start gap-3 text-[12px] leading-tight ${license.popular ? "text-gray-900" : "text-gray-400"}`}>
                       <Check className={`w-4 h-4 shrink-0 ${license.popular ? "text-primary" : "text-gray-600"}`} />
                       <span>{feature}</span>
                     </li>
@@ -153,7 +155,8 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage, p
                   onClick={() => handlePurchase(license)}
                   className={`w-full py-7 font-black uppercase tracking-[0.15em] text-[11px] rounded-xl transition-all duration-300 ${
                     license.popular 
-                      ? "bg-primary hover:bg-primary/80 text-white shadow-[0_10px_20px_-5px_rgba(140,82,255,0.5)]" 
+                      /* Changed button colors: Black background with White text for contrast on the White card */
+                      ? "bg-black hover:bg-black/80 text-white shadow-xl" 
                       : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                   }`}
                 >
