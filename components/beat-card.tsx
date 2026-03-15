@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Play, Pause, ShoppingCart, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -24,6 +23,13 @@ interface BeatCardProps {
   image: string
   audioUrl: string
   isFree?: boolean
+  // ADDED: This ensures the card receives the Notion Price IDs
+  prices?: {
+    basic: { id: string; amount: number }
+    pro: { id: string; amount: number }
+    proXl: { id: string; amount: number }
+    premium: { id: string; amount: number }
+  }
 }
 
 export function BeatCard({
@@ -39,6 +45,7 @@ export function BeatCard({
   image,
   audioUrl,
   isFree,
+  prices, // Destructure prices here
 }: BeatCardProps) {
   const { currentBeat, isPlaying, playBeat } = useAudioPlayer()
   const isCurrentBeat = currentBeat?.id === id
@@ -47,7 +54,8 @@ export function BeatCard({
   const [isFreeDownloadModalOpen, setIsFreeDownloadModalOpen] = useState(false)
 
   const handlePlayClick = () => {
-    playBeat({ id, title, artist, audioUrl, image, price, bpm, type: "beat" })
+    // We pass the prices to the audio player so the player's buy button works too
+    playBeat({ id, title, artist, audioUrl, image, price, bpm, type: "beat", prices } as any)
   }
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -156,6 +164,8 @@ export function BeatCard({
           beatTitle={title}
           beatBpm={bpm}
           beatImage={image}
+          // THE FIX: Pass the prices object to the modal
+          prices={prices as any}
         />
       )}
     </>
