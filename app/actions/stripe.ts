@@ -3,17 +3,18 @@
 import { stripe } from "@/lib/stripe"
 
 export async function startCheckoutSession(
-  productName: string,
-  productDescription: string,
-  priceInCents: number,
-  productImage?: string,
+  priceId: string,           // Argument 1: The ID from Notion (e.g., price_1TAxt...)
+  productName: string,       // Argument 2
+  productDescription: string, // Argument 3
+  priceInCents: number,      // Argument 4
+  productImage?: string      // Argument 5
 ) {
-  console.log("[v0] Starting checkout session for:", productName, "Price:", priceInCents)
+  console.log("[v0] Starting checkout session for:", productName, "PriceID:", priceId)
 
-  // Validate price
-  if (priceInCents <= 0) {
-    console.error("[v0] Invalid price:", priceInCents)
-    throw new Error("Invalid price")
+  // Validate that we actually have a Price ID to send to Stripe
+  if (!priceId || priceId === "") {
+    console.error("[v0] Missing Price ID for product:", productName)
+    throw new Error("Price ID is required to start checkout")
   }
 
   try {
@@ -21,24 +22,18 @@ export async function startCheckoutSession(
       ui_mode: "embedded",
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: productName,
-              description: productDescription,
-              ...(productImage && { images: [productImage] }),
-            },
-            unit_amount: priceInCents,
-          },
+          // We use the direct Price ID from your Notion database here
+          price: priceId,
           quantity: 1,
         },
       ],
       mode: "payment",
-      // This metadata helps you identify the specific beat in Stripe/Webhooks
+      // Metadata allows you to see exactly what was bought in your Stripe Dashboard logs
       metadata: {
         beat_name: productName,
+        license_description: productDescription,
       },
-      // Updated return_url to match your new success page
+      // return_url handles the redirection after the embedded checkout is completed
       return_url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.freezy.ca"}/success?session_id={CHECKOUT_SESSION_ID}`,
     })
 
@@ -50,8 +45,9 @@ export async function startCheckoutSession(
     }
 
     return session.client_secret
-  } catch (error) {
+  } catch (error: any) {
     console.error("[v0] Stripe session creation error:", error)
-    throw error
+    // If Stripe returns a specific error (like an invalid Price ID), this sends it to the frontend
+    throw new Error(error.message || "Stripe session creation failed")
   }
 }
