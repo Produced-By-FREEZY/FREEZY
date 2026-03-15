@@ -3,67 +3,43 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import { Check } from "lucide-react"
 
 interface License {
   name: string
   price: string
   features: string[]
   isContact?: boolean
+  popular?: boolean
 }
 
 const licenses: License[] = [
   {
     name: "Basic",
     price: "$29.99",
-    features: ["MP3 Download", "Non-Profit Use", "2,000 Streams", "1 Music Video", "Tagged Version"],
+    features: ["MP3 Download", "Non-Profit Use", "2,000 Streams", "Tagged Version"],
   },
   {
     name: "Pro",
     price: "$49.99",
-    features: [
-      "WAV Download",
-      "For-Profit Use",
-      "10,000 Streams",
-      "3 Music Videos",
-      "Untagged Version",
-      "Trackout Stems",
-    ],
+    popular: true,
+    features: ["WAV Download", "For-Profit Use", "10,000 Streams", "Trackout Stems"],
   },
   {
     name: "Pro XL",
     price: "$99.97",
-    features: [
-      "WAV Download",
-      "Trackout Stems",
-      "Unlimited Streams",
-      "Unlimited Music Videos",
-      "Untagged Version",
-      "Distribution Copies: 5,000",
-    ],
+    features: ["Unlimited Streams", "Unlimited Videos", "Distro: 5k Copies", "Trackout Stems"],
   },
   {
     name: "Premium",
     price: "$199.97",
-    features: [
-      "WAV Download",
-      "Trackout Stems",
-      "Unlimited Streams",
-      "Unlimited Music Videos",
-      "Untagged Version",
-      "All Files Included",
-    ],
+    features: ["Unlimited Everything", "All Files Included", "Highest Quality", "Radio Ready"],
   },
   {
     name: "Exclusive",
-    price: "Request Pricing",
+    price: "Inquire",
     isContact: true,
-    features: [
-      "Full Ownership Rights",
-      "WAV + Trackout Stems",
-      "Unlimited Everything",
-      "Beat Removed from Store",
-      "Producer Credit Optional",
-    ],
+    features: ["Full Ownership", "Removed From Store", "Contract Signed", "Buyout"],
   },
 ]
 
@@ -87,10 +63,8 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage }:
     })
 
     if (license.isContact) {
-      // Redirect to contact page for Exclusive requests
       router.push(`/contact?${params.toString()}&type=exclusive`)
     } else {
-      // Standard Stripe Checkout flow
       router.push(`/checkout?${params.toString()}`)
     }
     onClose()
@@ -98,70 +72,86 @@ export function LicenseModal({ isOpen, onClose, beatTitle, beatBpm, beatImage }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl bg-card border-border max-h-[95vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-2xl font-bold text-white">Choose Your License</DialogTitle>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto px-1 custom-scrollbar">
-          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg mb-4 border border-border/50">
-            <img src={beatImage || "/placeholder.svg"} alt={beatTitle} className="w-16 h-16 rounded object-cover shadow-lg" />
+      <DialogContent className="max-w-[95vw] lg:max-w-[1200px] bg-[#0a0a0a] border-white/10 p-0 overflow-hidden border-none shadow-2xl">
+        
+        {/* Header Section */}
+        <div className="p-6 border-b border-white/5 bg-gradient-to-r from-black to-[#111]">
+          <div className="flex items-center gap-4">
+            <img 
+              src={beatImage || "/placeholder.svg"} 
+              alt={beatTitle} 
+              className="w-16 h-16 rounded-md object-cover ring-1 ring-white/20 shadow-2xl" 
+            />
             <div>
-              <h3 className="font-bold text-white text-lg">{beatTitle}</h3>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">{beatBpm} BPM | Produced by FЯEEZY</p>
+              <DialogTitle className="text-2xl font-black text-white uppercase tracking-tighter">
+                Select License
+              </DialogTitle>
+              <p className="text-sm text-gray-400 font-medium">
+                {beatTitle} <span className="text-primary/60 ml-2">// {beatBpm} BPM</span>
+              </p>
             </div>
           </div>
+        </div>
 
-          {/* Grid updated to 3 columns on desktop to accommodate 5 tiers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* License Grid - 5 columns on desktop, horizontal scroll on mobile */}
+        <div className="p-4 lg:p-8 overflow-x-auto custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 min-w-[1000px] lg:min-w-0 pb-4">
             {licenses.map((license) => (
               <div
                 key={license.name}
-                className={`border-2 rounded-xl p-5 transition-all duration-200 flex flex-col hover:shadow-2xl ${
-                  license.name === "Pro"
-                    ? "border-primary bg-primary/5 ring-1 ring-primary/20 scale-[1.02]"
-                    : "border-border bg-muted/20 hover:border-white/30"
+                className={`relative group flex flex-col p-6 rounded-2xl transition-all duration-300 border ${
+                  license.popular 
+                    ? "bg-white/[0.03] border-primary/50 shadow-[0_0_40px_-15px_rgba(140,82,255,0.3)] scale-[1.02] z-10" 
+                    : license.isContact 
+                    ? "bg-primary/5 border-primary/20" 
+                    : "bg-white/[0.01] border-white/5 hover:border-white/20"
                 }`}
               >
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-white">{license.name}</h3>
-                    {license.name === "Pro" && (
-                      <Badge className="bg-primary text-primary-foreground text-[10px] uppercase font-black">Most Popular</Badge>
-                    )}
+                {license.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-[10px] font-black px-3 py-1 rounded-full uppercase text-white tracking-widest shadow-xl">
+                    Best Value
                   </div>
-                  <p className="text-2xl font-black text-primary tracking-tighter">{license.price}</p>
+                )}
+
+                <div className="mb-8">
+                  <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] mb-2 ${license.popular ? "text-primary" : "text-gray-500"}`}>
+                    {license.name}
+                  </h3>
+                  <p className="text-3xl font-black text-white tracking-tighter">
+                    {license.price}
+                  </p>
                 </div>
 
-                <ul className="space-y-2 flex-1 mt-4 mb-6">
+                <ul className="space-y-4 mb-10 flex-1">
                   {license.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-[13px] text-gray-300">
-                      <span className="text-primary font-bold">✓</span>
-                      <span>{feature}</span>
+                    <li key={feature} className="flex items-center gap-2 text-[11px] text-gray-400 group-hover:text-gray-200 transition-colors">
+                      <Check className="w-3 h-3 text-primary flex-shrink-0" />
+                      <span className="leading-tight">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
-                  className={`w-full font-bold uppercase tracking-widest text-xs py-5 ${
-                    license.isContact 
-                    ? "bg-white text-black hover:bg-gray-200" 
-                    : "bg-primary hover:bg-primary/90 text-white"
-                  }`}
                   onClick={() => handlePurchase(license)}
+                  className={`w-full py-6 font-bold uppercase tracking-widest text-[10px] rounded-xl transition-all ${
+                    license.popular 
+                      ? "bg-primary hover:bg-primary/80 text-white shadow-lg shadow-primary/20" 
+                      : license.isContact
+                      ? "bg-white text-black hover:bg-gray-200"
+                      : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                  }`}
                 >
-                  {license.isContact ? "Contact for Pricing" : `Select ${license.name}`}
+                  {license.isContact ? "Inquire" : "Select"}
                 </Button>
               </div>
             ))}
           </div>
+        </div>
 
-          <div className="mt-6 p-4 bg-muted/30 rounded-lg border border-border/30">
-            <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
-              All digital purchases include high-quality files and a legally binding license agreement. 
-              Exclusive licenses grant full ownership and the beat will be immediately removed from the store.
-            </p>
-          </div>
+        <div className="p-4 text-center bg-black/50 border-t border-white/5">
+          <p className="text-[10px] text-gray-600 uppercase tracking-widest font-medium">
+            Secure checkout via Stripe // Instant high-quality delivery
+          </p>
         </div>
       </DialogContent>
     </Dialog>
