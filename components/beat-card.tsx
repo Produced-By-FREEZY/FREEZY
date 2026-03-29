@@ -17,13 +17,13 @@ interface BeatCardProps {
   price: string
   bpm: number
   musicalKey?: string
-  genres: string[]
-  tags: string[]
+  // UPDATED: Changed from string[] to string to match Notion Text output
+  genres: string 
+  tags: string 
   typeBeat?: string
   image: string
   audioUrl: string
   isFree?: boolean
-  // ADDED: This ensures the card receives the Notion Price IDs
   prices?: {
     basic: { id: string; amount: number }
     pro: { id: string; amount: number }
@@ -45,7 +45,7 @@ export function BeatCard({
   image,
   audioUrl,
   isFree,
-  prices, // Destructure prices here
+  prices,
 }: BeatCardProps) {
   const { currentBeat, isPlaying, playBeat } = useAudioPlayer()
   const isCurrentBeat = currentBeat?.id === id
@@ -53,8 +53,11 @@ export function BeatCard({
   const [isLicenseModalOpen, setIsLicenseModalOpen] = useState(false)
   const [isFreeDownloadModalOpen, setIsFreeDownloadModalOpen] = useState(false)
 
+  // Helper to safely split strings into arrays for the UI badges
+  const genreArray = typeof genres === "string" ? genres.split(",").map(g => g.trim()).filter(Boolean) : []
+  const tagArray = typeof tags === "string" ? tags.split(",").map(t => t.trim()).filter(Boolean) : []
+
   const handlePlayClick = () => {
-    // We pass the prices to the audio player so the player's buy button works too
     playBeat({ id, title, artist, audioUrl, image, price, bpm, type: "beat", prices } as any)
   }
 
@@ -101,20 +104,28 @@ export function BeatCard({
               <span className="text-xs text-[#8c52ff]/70">Type Beat</span>
             </div>
           )}
+          
           <div className="flex flex-wrap gap-1">
-            {genres.map((genre) => (
+            {/* UPDATED: Uses the split genreArray to avoid crashes */}
+            {genreArray.map((genre) => (
               <Badge key={genre} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                 {genre}
               </Badge>
             ))}
           </div>
+
           <div className="text-xs text-muted-foreground space-y-1">
             <div className="flex items-center gap-2">
               <span className="font-mono">{bpm} BPM</span>
               {musicalKey && <span>• {musicalKey}</span>}
             </div>
           </div>
-          <div className="text-xs text-muted-foreground">{tags.slice(0, 3).join(", ")}</div>
+
+          {/* UPDATED: Uses tagArray.join instead of tags.slice.join to handle the string safely */}
+          <div className="text-xs text-muted-foreground">
+            {tagArray.slice(0, 3).join(", ")}
+          </div>
+
           <div className="flex items-center justify-between gap-2 pt-2">
             <span className="text-lg font-bold text-foreground">{price}</span>
             {isFree ? (
@@ -164,7 +175,6 @@ export function BeatCard({
           beatTitle={title}
           beatBpm={bpm}
           beatImage={image}
-          // THE FIX: Pass the prices object to the modal
           prices={prices as any}
         />
       )}
