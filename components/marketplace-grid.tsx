@@ -64,12 +64,13 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
       filteredBeats = filteredBeats.filter((beat) => {
         return (
           beat.title.toLowerCase().includes(query) ||
-          beat.genres.some((genre: string) => genre.toLowerCase().includes(query)) ||
-          beat.tags.some((tag: string) => tag.toLowerCase().includes(query)) ||
+          // UPDATED: Handle genres, tags, and moods as strings
+          (typeof beat.genres === "string" && beat.genres.toLowerCase().includes(query)) ||
+          (typeof beat.tags === "string" && beat.tags.toLowerCase().includes(query)) ||
           beat.bpm.toString().includes(query) ||
           (beat.typeBeat && beat.typeBeat.toLowerCase().includes(query)) ||
           (beat.musicalKey && beat.musicalKey.toLowerCase().includes(query)) ||
-          (beat.mood && beat.mood.some((m: string) => m.toLowerCase().includes(query)))
+          (typeof beat.mood === "string" && beat.mood.toLowerCase().includes(query))
         )
       })
     }
@@ -97,14 +98,28 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
           }
         }
 
+        // UPDATED: Filter Genres as strings
         if (filters.selectedGenres.length > 0) {
-          if (!beat.genres.some((genre: string) => filters.selectedGenres.includes(genre))) {
-            return false
+          if (typeof beat.genres === "string") {
+            const beatGenreList = beat.genres.toLowerCase()
+            const hasMatch = filters.selectedGenres.some(selected => 
+              beatGenreList.includes(selected.toLowerCase())
+            )
+            if (!hasMatch) return false
+          } else {
+             return false
           }
         }
 
+        // UPDATED: Filter Moods as strings
         if (filters.selectedMoods.length > 0) {
-          if (!beat.mood || !beat.mood.some((mood: string) => filters.selectedMoods.includes(mood))) {
+          if (typeof beat.mood === "string") {
+            const beatMoodList = beat.mood.toLowerCase()
+            const hasMatch = filters.selectedMoods.some(selected => 
+              beatMoodList.includes(selected.toLowerCase())
+            )
+            if (!hasMatch) return false
+          } else {
             return false
           }
         }
@@ -131,7 +146,6 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
         filteredBeats.sort((a, b) => b.bpm - a.bpm)
         break
       case "popular":
-        // Keep default order for now (could add a popularity field later)
         break
       case "newest":
       default:
