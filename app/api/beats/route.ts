@@ -65,13 +65,11 @@ export async function GET(request: Request) {
 
       const beatName = getText(props["Beat name"]) || "Untitled Beat"
       
-      // Pull IDs from Notion Columns (Matched to your screenshot)
       const basicId = getText(props["Basic Price ID"])
       const proId = getText(props["Pro Price ID"])
       const proXlId = getText(props["Pro XL Price ID"])
       const premiumId = getText(props["Premium Price ID"])
 
-      // Numeric prices
       const basicPrice = getNumber(props["Basic Price"]) || 29.99
       const proPrice = getNumber(props["Pro Price"]) || 49.99
       const proXlPrice = getNumber(props["Pro XL Price"]) || 99.97
@@ -79,12 +77,12 @@ export async function GET(request: Request) {
 
       const isFree = props["IsFree"]?.checkbox || false
 
-      // Safely handle arrays
-      const genres = props["Genres"]?.multi_select?.map((g: any) => g.name) || []
-      const moodsText = getText(props["Moods"])
-      const moods = moodsText ? moodsText.split(",").map((m: string) => m.trim()).filter(Boolean) : []
-      const tagsText = getText(props["Tags"])
-      const tags = tagsText ? tagsText.split(",").map((t: string) => t.trim()).filter(Boolean) : []
+      // --- UPDATED MAPPING FOR TEXT PROPERTIES ---
+      // We use getText() for all three now since they are "Text" in Notion.
+      // This returns exactly what you type in Notion: "Trap, Hip Hop, Drill"
+      const genres = getText(props["Genres"]) 
+      const moods = getText(props["Moods"])
+      const tags = getText(props["Tags"])
 
       return {
         id: page.id,
@@ -93,17 +91,15 @@ export async function GET(request: Request) {
         price: isFree ? "FREE" : `$${basicPrice.toFixed(2)}`,
         bpm: getNumber(props["BPM"]) || 0,
         musicalKey: getText(props["Key"]) || "N/A",
-        genres,
-        mood: moods,
-        tags,
+        genres: genres, // Now a string
+        mood: moods,   // Now a string
+        tags: tags,    // Now a string
         image: getText(props["IMG URL"]) || "/placeholder.svg",
         audioUrl: getText(props["MP3 URL"]) || "",
         isFree,
         isFeatured: props["IsFeatured"]?.checkbox || false,
         typeBeat: getText(props["TypeBeat"]) || "",
         
-        // This structure allows your LicenseModal to pick the specific ID 
-        // string (e.g., prices.pro.id) instead of an object.
         prices: {
           basic: { id: basicId, amount: basicPrice },
           pro: { id: proId, amount: proPrice },
