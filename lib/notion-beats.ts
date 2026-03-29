@@ -57,7 +57,11 @@ function filterMockBeats(
   }
 
   if (filters?.genre) {
-    filtered = filtered.filter((beat) => beat.genres.includes(filters.genre))
+    // UPDATED: Since beat.genres is now a string, we check if the selected 
+    // genre string exists within that text.
+    filtered = filtered.filter((beat) => 
+      beat.genres.toLowerCase().includes(filters.genre!.toLowerCase())
+    )
   }
 
   if (filters?.typeBeat) {
