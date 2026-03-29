@@ -180,27 +180,24 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
   }
 
   const handleFilterChange = (section: string, option: string, checked: boolean) => {
-    const setterMap: Record<string, React.Dispatch<React.SetStateAction<string[]>>> = {
-      "Type Beats": setSelectedTypeBeats,
-      Genre: setSelectedGenres,
-      "Mood/Feel": setSelectedMoods,
-      Key: setSelectedKeys,
-    }
-
-    const setter = setterMap[section]
-    if (setter) {
-      setter((prev) => (checked ? [...prev, option] : prev.filter((item) => item !== option)))
+    // Corrected state mapping to ensure we update the specific array
+    if (section === "Type Beats") {
+      setSelectedTypeBeats(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
+    } else if (section === "Genre") {
+      setSelectedGenres(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
+    } else if (section === "Mood/Feel") {
+      setSelectedMoods(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
+    } else if (section === "Key") {
+      setSelectedKeys(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
     }
   }
 
   const getSelectedItems = (section: string): string[] => {
-    const itemsMap: Record<string, string[]> = {
-      "Type Beats": selectedTypeBeats,
-      Genre: selectedGenres,
-      "Mood/Feel": selectedMoods,
-      Key: selectedKeys,
-    }
-    return itemsMap[section] || []
+    if (section === "Type Beats") return selectedTypeBeats
+    if (section === "Genre") return selectedGenres
+    if (section === "Mood/Feel") return selectedMoods
+    if (section === "Key") return selectedKeys
+    return []
   }
 
   const clearAllFilters = () => {
@@ -234,7 +231,6 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
         <div className="space-y-3 pb-4 border-b border-border">
           <Label className="text-sm font-semibold text-foreground">BPM Range</Label>
           <div className="space-y-2">
-            {/* Fixed: explicit cast to [number, number] */}
             <Slider 
               value={bpmRange} 
               onValueChange={(val) => setBpmRange(val as [number, number])} 
@@ -248,14 +244,14 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
                 type="number"
                 value={bpmRange[0]}
                 onChange={(e) => setBpmRange([Number(e.target.value), bpmRange[1]])}
-                className="w-20 h-8 text-xs"
+                className="w-20 h-8 text-xs bg-muted"
               />
               <span className="text-xs text-muted-foreground">to</span>
               <Input
                 type="number"
                 value={bpmRange[1]}
                 onChange={(e) => setBpmRange([bpmRange[0], Number(e.target.value)])}
-                className="w-20 h-8 text-xs"
+                className="w-20 h-8 text-xs bg-muted"
               />
             </div>
           </div>
@@ -316,7 +312,7 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
           </div>
         ))}
 
-        <Button variant="outline" className="w-full bg-transparent" onClick={clearAllFilters}>
+        <Button variant="outline" className="w-full bg-transparent border-primary/20 hover:bg-primary/10" onClick={clearAllFilters}>
           Clear All Filters
         </Button>
       </div>
