@@ -81,23 +81,63 @@ const filterSections: FilterSection[] = [
       "Smokepurpp Type Beat", "Lil Pump Type Beat",
     ],
   },
-  {
-    title: "Genre",
-    options: [
-      "Hip Hop", "Trap", "Drill", "Boom Bap", "Lo-Fi", "West Coast", "East Coast", "Southern", "Phonk", "Jersey Club",
-      "R&B", "Soul", "Neo-Soul", "Funk", "Gospel", "Pop", "Alternative", "Electronic", "EDM", "House", "Techno",
-      "Afrobeats", "Dancehall", "Reggae", "Latin", "Reggaeton", "Bachata", "Trap Latino", "Rock", "Indie", "Punk", "Metal",
-      "Country", "Jazz", "Classical", "Cinematic", "Experimental", "Ambient"
-    ],
-  },
-  {
-    title: "Mood/Feel",
-    options: [
-      "Aggressive", "Hard", "Intense", "Energetic", "Bouncy", "Dark", "Evil", "Gritty",
-      "Chill", "Smooth", "Atmospheric", "Dreamy", "Ethereal", "Emotional", "Sad", "Soulful",
-      "Uplifting", "Motivational", "Happy", "Romantic", "Cinematic"
-    ],
-  },
+{
+  title: "Genre",
+  options: [
+    // Hip Hop & Sub-genres
+    "Hip Hop", "Trap", "Drill", "Boom Bap", "Lo-Fi", "Phonk", "Jersey Club", "Detroit Trap", "PluggnB", "Glitchcore", 
+    "West Coast", "East Coast", "Southern", "Midwest", "Old School", "Underground",
+    
+    // R&B & Soul
+    "R&B", "Soul", "Neo-Soul", "Funk", "Gospel", "Contemporary R&B", "Quiet Storm", "Disco",
+    
+    // Pop & Alternative
+    "Pop", "Alternative", "Indie Pop", "Hyperpop", "Synthpop", "K-Pop", "Dark Pop",
+    
+    // Electronic
+    "Electronic", "EDM", "House", "Techno", "Dubstep", "Synthwave", "Garage", "Drum & Bass", "Future Bass",
+    
+    // Global / World
+    "Afrobeats", "Amapiano", "Dancehall", "Reggae", "Latin", "Reggaeton", "Bachata", "Trap Latino", "Salsa", "Dembow",
+    
+    // Rock & Heavy
+    "Rock", "Indie", "Punk", "Metal", "Hardcore", "Grunge", "Psychedelic",
+    
+    // Organic & Scoring
+    "Country", "Folk", "Acoustic", "Jazz", "Blues", "Classical", "Cinematic", "Orchestral", "World",
+    
+    // Mood-Based / Experimental
+    "Experimental", "Ambient", "Industrial", "Noise"
+  ],
+},
+{
+  title: "Mood/Feel",
+  options: [
+    // High Energy & Aggression
+    "Aggressive", "Hard", "Intense", "Energetic", "Bouncy", "Hype", "Powerful", "Angry", "Epic", "Triumphant", "Rowdy",
+    
+    // Dark & Mysterious
+    "Dark", "Evil", "Gritty", "Scary", "Mysterious", "Trippy", "Creepy", "Eerie", "Haunting", "Gothic",
+    
+    // Calm & Smooth
+    "Chill", "Smooth", "Relaxing", "Mellow", "Lazy", "Zen", "Minimalist", "Peaceful",
+    
+    // Atmospheric & Spacey
+    "Atmospheric", "Dreamy", "Ethereal", "Spacey", "Ambient", "Lush", "Cloudy", "Hypnotic",
+    
+    // Emotional & Deep
+    "Emotional", "Sad", "Soulful", "Melancholic", "Depressing", "Lonely", "Nostalgic", "Reflective", "Heartbroken",
+    
+    // Positive & Bright
+    "Uplifting", "Motivational", "Happy", "Inspirational", "Bright", "Hopeful", "Joyful", "Fun",
+    
+    // Sophisticated & Romantic
+    "Romantic", "Sexy", "Sensual", "Elegant", "Luxury", "Sophisticated", "Cinematic", "Regal",
+    
+    // Raw & Lo-Fi
+    "Raw", "Dirty", "Vintage", "Lo-fi", "Industrial", "Distorted"
+  ],
+},
   {
     title: "Key",
     options: [
