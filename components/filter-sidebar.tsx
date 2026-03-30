@@ -80,15 +80,31 @@ const filterSections: FilterSection[] = [
       "Smokepurpp Type Beat", "Lil Pump Type Beat",
     ],
   },
-  {
-    title: "Genre",
-    options: [
-      "Trap", "Hip Hop", "R&B", "Pop", "Drill", "Boom Bap", "Lo-Fi", "Alternative", "Rock", "Indie",
-      "Electronic", "EDM", "House", "Techno", "Dubstep", "Jazz", "Soul", "Funk", "Reggae", "Dancehall",
-      "Afrobeat", "Latin", "Reggaeton", "Bachata", "Country", "Folk", "Experimental", "Ambient",
-      "West-coast", "East-coast", "Southern", "Midwest",
-    ],
-  },
+{
+  title: "Genre",
+  options: [
+    // Hip Hop & Urban
+    "Hip Hop", "Trap", "Drill", "Boom Bap", "Lo-Fi", "West Coast", "East Coast", "Southern", "Midwest", "Phonk", "Jersey Club", 
+    
+    // R&B & Soul
+    "R&B", "Soul", "Neo-Soul", "Funk", "Gospel",
+    
+    // Pop & Electronic
+    "Pop", "Alternative", "Electronic", "EDM", "House", "Techno", "Dubstep", "Hyperpop", "Synthwave",
+    
+    // Global & Regional
+    "Afrobeats", "Dancehall", "Reggae", "Latin", "Reggaeton", "Bachata", "Trap Latino", "K-Pop",
+    
+    // Rock & Organic
+    "Rock", "Indie", "Punk", "Metal", "Country", "Folk", "Acoustic",
+    
+    // Jazz & Classical
+    "Jazz", "Blues", "Classical", "Cinematic",
+    
+    // Mood-Based / Experimental
+    "Experimental", "Ambient", "Dark", "Aggressive", "Chill"
+  ],
+},
   {
     title: "Mood/Feel",
     options: [
