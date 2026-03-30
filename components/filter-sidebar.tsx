@@ -1,13 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
+import { ChevronDown, ChevronUp, SlidersHorizontal, Search, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 
 interface FilterSection {
   title: string
@@ -80,44 +81,29 @@ const filterSections: FilterSection[] = [
       "Smokepurpp Type Beat", "Lil Pump Type Beat",
     ],
   },
-{
-  title: "Genre",
-  options: [
-    // Hip Hop & Urban
-    "Hip Hop", "Trap", "Drill", "Boom Bap", "Lo-Fi", "West Coast", "East Coast", "Southern", "Midwest", "Phonk", "Jersey Club", 
-    
-    // R&B & Soul
-    "R&B", "Soul", "Neo-Soul", "Funk", "Gospel",
-    
-    // Pop & Electronic
-    "Pop", "Alternative", "Electronic", "EDM", "House", "Techno", "Dubstep", "Hyperpop", "Synthwave",
-    
-    // Global & Regional
-    "Afrobeats", "Dancehall", "Reggae", "Latin", "Reggaeton", "Bachata", "Trap Latino", "K-Pop",
-    
-    // Rock & Organic
-    "Rock", "Indie", "Punk", "Metal", "Country", "Folk", "Acoustic",
-    
-    // Jazz & Classical
-    "Jazz", "Blues", "Classical", "Cinematic",
-    
-    // Mood-Based / Experimental
-    "Experimental", "Ambient", "Dark", "Aggressive", "Chill"
-  ],
-},
+  {
+    title: "Genre",
+    options: [
+      "Hip Hop", "Trap", "Drill", "Boom Bap", "Lo-Fi", "West Coast", "East Coast", "Southern", "Phonk", "Jersey Club",
+      "R&B", "Soul", "Neo-Soul", "Funk", "Gospel", "Pop", "Alternative", "Electronic", "EDM", "House", "Techno",
+      "Afrobeats", "Dancehall", "Reggae", "Latin", "Reggaeton", "Bachata", "Trap Latino", "Rock", "Indie", "Punk", "Metal",
+      "Country", "Jazz", "Classical", "Cinematic", "Experimental", "Ambient"
+    ],
+  },
   {
     title: "Mood/Feel",
     options: [
-      "Dark", "Chill", "Aggressive", "Emotional", "Uplifting", "Sad", "Energetic", "Melodic", "Hard",
-      "Smooth", "Atmospheric", "Dreamy", "Bouncy", "Groovy", "Intense", "Relaxing", "Motivational",
-      "Romantic", "Angry", "Happy",
+      "Aggressive", "Hard", "Intense", "Energetic", "Bouncy", "Dark", "Evil", "Gritty",
+      "Chill", "Smooth", "Atmospheric", "Dreamy", "Ethereal", "Emotional", "Sad", "Soulful",
+      "Uplifting", "Motivational", "Happy", "Romantic", "Cinematic"
     ],
   },
   {
     title: "Key",
     options: [
-      "C Major", "C Minor", "D Major", "D Minor", "E Major", "E Minor", "F Major", "F Minor",
-      "G Major", "G Minor", "A Major", "A Minor", "B Major", "B Minor",
+      "C Major", "C Minor", "C# Major", "C# Minor", "D Major", "D Minor", "Eb Major", "Eb Minor",
+      "E Major", "E Minor", "F Major", "F Minor", "F# Major", "F# Minor", "G Major", "G Minor",
+      "G# Major", "G# Minor", "A Major", "A Minor", "Bb Major", "Bb Minor", "B Major", "B Minor",
     ],
   },
 ]
@@ -139,23 +125,20 @@ export interface FilterState {
 }
 
 export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, onClearFilters }: FilterSidebarProps) {
-  const [expandedSections, setExpandedSections] = useState<string[]>(filterSections.map((section) => section.title))
+  const [expandedSections, setExpandedSections] = useState<string[]>(["Genre", "Mood/Feel"])
   const [bpmRange, setBpmRange] = useState<[number, number]>([60, 180])
   const [selectedTypeBeats, setSelectedTypeBeats] = useState<string[]>([])
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [selectedMoods, setSelectedMoods] = useState<string[]>([])
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
   const [showFreeOnly, setShowFreeOnly] = useState(false)
+  
+  // Local search for the long "Type Beats" list
+  const [artistSearch, setArtistSearch] = useState("")
 
+  // Initial Sync
   useEffect(() => {
-    if (initialFilters === undefined) {
-      setBpmRange([60, 180])
-      setSelectedTypeBeats([])
-      setSelectedGenres([])
-      setSelectedMoods([])
-      setSelectedKeys([])
-      setShowFreeOnly(false)
-    } else {
+    if (initialFilters) {
       if (initialFilters.bpmRange) setBpmRange(initialFilters.bpmRange as [number, number])
       if (initialFilters.selectedTypeBeats) setSelectedTypeBeats(initialFilters.selectedTypeBeats)
       if (initialFilters.selectedGenres) setSelectedGenres(initialFilters.selectedGenres)
@@ -165,46 +148,33 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
     }
   }, [initialFilters])
 
+  // Trigger parent update
   useEffect(() => {
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      const typeBeatSection = filterSections.find((s) => s.title === "Type Beats")
-      if (typeBeatSection) {
-        const matchingTypeBeats = typeBeatSection.options.filter((option) => option.toLowerCase().includes(query))
-        if (matchingTypeBeats.length > 0) {
-          setSelectedTypeBeats(matchingTypeBeats)
-        }
-      }
-    }
-  }, [searchQuery])
-
-  useEffect(() => {
-    if (onFiltersChange) {
-      onFiltersChange({
-        bpmRange,
-        selectedTypeBeats,
-        selectedGenres,
-        selectedMoods,
-        selectedKeys,
-        showFreeOnly,
-      })
-    }
-  }, [bpmRange, selectedTypeBeats, selectedGenres, selectedMoods, selectedKeys, showFreeOnly, onFiltersChange])
+    onFiltersChange?.({
+      bpmRange,
+      selectedTypeBeats,
+      selectedGenres,
+      selectedMoods,
+      selectedKeys,
+      showFreeOnly,
+    })
+  }, [bpmRange, selectedTypeBeats, selectedGenres, selectedMoods, selectedKeys, showFreeOnly])
 
   const toggleSection = (title: string) => {
     setExpandedSections((prev) => (prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]))
   }
 
   const handleFilterChange = (section: string, option: string, checked: boolean) => {
-    // Corrected state mapping to ensure we update the specific array
-    if (section === "Type Beats") {
-      setSelectedTypeBeats(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
-    } else if (section === "Genre") {
-      setSelectedGenres(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
-    } else if (section === "Mood/Feel") {
-      setSelectedMoods(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
-    } else if (section === "Key") {
-      setSelectedKeys(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
+    const setters: Record<string, React.Dispatch<React.SetStateAction<string[]>>> = {
+      "Type Beats": setSelectedTypeBeats,
+      "Genre": setSelectedGenres,
+      "Mood/Feel": setSelectedMoods,
+      "Key": setSelectedKeys,
+    }
+    
+    const setter = setters[section]
+    if (setter) {
+      setter(prev => checked ? [...prev, option] : prev.filter(i => i !== option))
     }
   }
 
@@ -223,114 +193,109 @@ export function FilterSidebar({ searchQuery, initialFilters, onFiltersChange, on
     setSelectedMoods([])
     setSelectedKeys([])
     setShowFreeOnly(false)
-    if (onClearFilters) {
-      onClearFilters()
-    }
+    onClearFilters?.()
   }
 
   return (
-    <aside className="w-full lg:w-72 space-y-6">
+    <aside className="w-full lg:w-72 space-y-6 bg-card p-4 rounded-xl border border-border">
       <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-bold text-foreground">Filter Beats</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-bold">Filters</h3>
+          </div>
+          {(selectedGenres.length > 0 || selectedTypeBeats.length > 0) && (
+             <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-8 px-2 text-xs text-muted-foreground">
+               Reset
+             </Button>
+          )}
         </div>
 
-        {searchQuery && (
-          <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              Searching for: <span className="text-foreground font-semibold">{searchQuery}</span>
-            </p>
+        {/* BPM SLIDER */}
+        <div className="space-y-4 pb-4 border-b">
+          <div className="flex justify-between">
+            <Label className="text-sm font-semibold">BPM</Label>
+            <span className="text-xs font-mono text-primary">{bpmRange[0]} - {bpmRange[1]}</span>
           </div>
-        )}
-
-        <div className="space-y-3 pb-4 border-b border-border">
-          <Label className="text-sm font-semibold text-foreground">BPM Range</Label>
-          <div className="space-y-2">
-            <Slider 
-              value={bpmRange} 
-              onValueChange={(val) => setBpmRange(val as [number, number])} 
-              min={60} 
-              max={200} 
-              step={1} 
-              className="w-full" 
-            />
-            <div className="flex items-center justify-between gap-2">
-              <Input
-                type="number"
-                value={bpmRange[0]}
-                onChange={(e) => setBpmRange([Number(e.target.value), bpmRange[1]])}
-                className="w-20 h-8 text-xs bg-muted"
-              />
-              <span className="text-xs text-muted-foreground">to</span>
-              <Input
-                type="number"
-                value={bpmRange[1]}
-                onChange={(e) => setBpmRange([bpmRange[0], Number(e.target.value)])}
-                className="w-20 h-8 text-xs bg-muted"
-              />
-            </div>
-          </div>
+          <Slider 
+            value={bpmRange} 
+            onValueChange={(val) => setBpmRange(val as [number, number])} 
+            min={40} max={220} step={1} 
+          />
         </div>
 
-        <div className="space-y-3 pb-4 border-b border-border">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="free-beats-only"
-              checked={showFreeOnly}
-              onCheckedChange={(checked) => setShowFreeOnly(checked as boolean)}
-            />
-            <Label
-              htmlFor="free-beats-only"
-              className="text-sm font-semibold text-foreground cursor-pointer hover:text-primary"
-            >
-              Free Beats Only
-            </Label>
-          </div>
+        {/* FREE ONLY TOGGLE */}
+        <div className="flex items-center justify-between py-2">
+          <Label htmlFor="free-beats" className="text-sm font-medium cursor-pointer">Free Download Only</Label>
+          <Checkbox 
+            id="free-beats" 
+            checked={showFreeOnly} 
+            onCheckedChange={(val) => setShowFreeOnly(!!val)} 
+          />
         </div>
 
-        {filterSections.map((section) => (
-          <div key={section.title} className="space-y-3 pb-4 border-b border-border">
-            <Button
-              variant="ghost"
-              className="w-full justify-between p-0 h-auto font-semibold text-foreground hover:bg-transparent"
-              onClick={() => toggleSection(section.title)}
-            >
-              <span className="flex items-center gap-2">
-                {expandedSections.includes(section.title) ? (
-                  <ChevronDown className="h-4 w-4 text-primary" />
-                ) : (
-                  <ChevronUp className="h-4 w-4" />
-                )}
-                {section.title}
-              </span>
-            </Button>
+        {/* DYNAMIC SECTIONS */}
+        {filterSections.map((section) => {
+          const isExpanded = expandedSections.includes(section.title)
+          const activeCount = getSelectedItems(section.title).length
 
-            {expandedSections.includes(section.title) && (
-              <div className="space-y-2 pl-6 max-h-64 overflow-y-auto scrollbar-hide">
-                {section.options.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`${section.title}-${option}`}
-                      checked={getSelectedItems(section.title).includes(option)}
-                      onCheckedChange={(checked) => handleFilterChange(section.title, option, checked as boolean)}
-                    />
-                    <Label
-                      htmlFor={`${section.title}-${option}`}
-                      className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
-                    >
-                      {option}
-                    </Label>
+          return (
+            <div key={section.title} className="space-y-3 pb-4 border-b border-border/50">
+              <Button
+                variant="ghost"
+                className="w-full justify-between p-0 h-auto hover:bg-transparent group"
+                onClick={() => toggleSection(section.title)}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-sm">{section.title}</span>
+                  {activeCount > 0 && (
+                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px] bg-primary/10 text-primary">
+                      {activeCount}
+                    </Badge>
+                  )}
+                </div>
+                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+              </Button>
+
+              {isExpanded && (
+                <div className="space-y-3 pt-1">
+                  {/* Internal search for Type Beats */}
+                  {section.title === "Type Beats" && (
+                    <div className="relative mb-2">
+                      <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input
+                        placeholder="Search artists..."
+                        className="pl-8 h-8 text-xs bg-muted/50"
+                        value={artistSearch}
+                        onChange={(e) => setArtistSearch(e.target.value)}
+                      />
+                    </div>
+                  )}
+
+                  <div className="space-y-2 max-h-52 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-border">
+                    {section.options
+                      .filter(opt => section.title !== "Type Beats" || opt.toLowerCase().includes(artistSearch.toLowerCase()))
+                      .map((option) => (
+                      <div key={option} className="flex items-center space-x-2 py-0.5">
+                        <Checkbox
+                          id={`${section.title}-${option}`}
+                          checked={getSelectedItems(section.title).includes(option)}
+                          onCheckedChange={(checked) => handleFilterChange(section.title, option, !!checked)}
+                        />
+                        <Label
+                          htmlFor={`${section.title}-${option}`}
+                          className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                        >
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-
-        <Button variant="outline" className="w-full bg-transparent border-primary/20 hover:bg-primary/10" onClick={clearAllFilters}>
-          Clear All Filters
-        </Button>
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </aside>
   )
