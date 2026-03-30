@@ -24,18 +24,15 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
     const fetchBeats = async () => {
       try {
         const response = await fetch("/api/beats")
-        if (!response.ok) {
-          throw new Error("Failed to fetch beats")
-        }
+        if (!response.ok) throw new Error("Failed to fetch beats")
         const data = await response.json()
         setBeats(data.beats)
       } catch (err) {
-        console.error("[v0] Error fetching beats:", err)
+        console.error("Error fetching beats:", err)
       } finally {
         setLoading(false)
       }
     }
-
     fetchBeats()
   }, [])
 
@@ -44,27 +41,22 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
   }, [searchQuery, filters])
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 500)
-    }
+    const handleScroll = () => setShowScrollTop(window.scrollY > 500)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 
   const filteredBeats = useMemo(() => {
-    let filteredBeats = [...beats]
+    let result = [...beats]
 
-    // Apply search query filter
+    // 1. Search Filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      filteredBeats = filteredBeats.filter((beat) => {
+      result = result.filter((beat) => {
         return (
           beat.title.toLowerCase().includes(query) ||
-          // UPDATED: Handle genres, tags, and moods as strings
           (typeof beat.genres === "string" && beat.genres.toLowerCase().includes(query)) ||
           (typeof beat.tags === "string" && beat.tags.toLowerCase().includes(query)) ||
           beat.bpm.toString().includes(query) ||
@@ -75,96 +67,70 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
       })
     }
 
-    // Apply filters
+    // 2. Sidebar Filters
     if (filters) {
-      filteredBeats = filteredBeats.filter((beat) => {
-        if (beat.bpm < filters.bpmRange[0] || beat.bpm > filters.bpmRange[1]) {
-          return false
-        }
+      result = result.filter((beat) => {
+        // BPM Range
+        if (beat.bpm < filters.bpmRange[0] || beat.bpm > filters.bpmRange[1]) return false
 
-        if (filters.showFreeOnly && !beat.isFree) {
-          return false
-        }
+        // Free Only
+        if (filters.showFreeOnly && !beat.isFree) return false
 
+        // Type Beat (Artist)
         if (filters.selectedTypeBeats.length > 0) {
-          if (!beat.typeBeat) {
-            return false
-          }
-
-          const normalizedFilters = filters.selectedTypeBeats.map((filter) => filter.replace(" Type Beat", "").trim())
-
-          if (!normalizedFilters.includes(beat.typeBeat)) {
-            return false
-          }
+          if (!beat.typeBeat) return false
+          const normalizedFilters = filters.selectedTypeBeats.map(f => f.replace(" Type Beat", "").trim().toLowerCase())
+          if (!normalizedFilters.includes(beat.typeBeat.toLowerCase())) return false
         }
 
-        // UPDATED: Filter Genres as strings
+        // Genre Filter (Enhanced for string lists)
         if (filters.selectedGenres.length > 0) {
-          if (typeof beat.genres === "string") {
-            const beatGenreList = beat.genres.toLowerCase()
-            const hasMatch = filters.selectedGenres.some(selected => 
-              beatGenreList.includes(selected.toLowerCase())
-            )
-            if (!hasMatch) return false
-          } else {
-             return false
-          }
+          if (typeof beat.genres !== "string") return false
+          const beatGenreArray = beat.genres.toLowerCase().split(",").map(g => g.trim())
+          const hasMatch = filters.selectedGenres.some(selected => 
+            beatGenreArray.includes(selected.toLowerCase().trim())
+          )
+          if (!hasMatch) return false
         }
 
-        // UPDATED: Filter Moods as strings
+        // Mood Filter (FIXED: Improved matching for strings)
         if (filters.selectedMoods.length > 0) {
-          if (typeof beat.mood === "string") {
-            const beatMoodList = beat.mood.toLowerCase()
-            const hasMatch = filters.selectedMoods.some(selected => 
-              beatMoodList.includes(selected.toLowerCase())
-            )
-            if (!hasMatch) return false
-          } else {
-            return false
-          }
+          if (typeof beat.mood !== "string") return false
+          // Split by comma to handle strings like "Aggressive, Dark, Hype"
+          const beatMoodArray = beat.mood.toLowerCase().split(",").map(m => m.trim())
+          const hasMatch = filters.selectedMoods.some(selected => 
+            beatMoodArray.includes(selected.toLowerCase().trim())
+          )
+          if (!hasMatch) return false
         }
 
+        // Key Filter
         if (filters.selectedKeys.length > 0) {
-          if (!beat.musicalKey || !filters.selectedKeys.includes(beat.musicalKey)) {
-            return false
-          }
+          if (!beat.musicalKey || !filters.selectedKeys.includes(beat.musicalKey)) return false
         }
 
         return true
       })
     }
 
-    // Apply sorting
+    // 3. Sorting
     switch (sortBy) {
-      case "oldest":
-        filteredBeats.sort((a, b) => a.id.localeCompare(b.id))
-        break
-      case "bpm-low":
-        filteredBeats.sort((a, b) => a.bpm - b.bpm)
-        break
-      case "bpm-high":
-        filteredBeats.sort((a, b) => b.bpm - a.bpm)
-        break
-      case "popular":
-        break
+      case "oldest": result.sort((a, b) => a.id.localeCompare(b.id)); break
+      case "bpm-low": result.sort((a, b) => a.bpm - b.bpm); break
+      case "bpm-high": result.sort((a, b) => b.bpm - a.bpm); break
       case "newest":
-      default:
-        filteredBeats.sort((a, b) => b.id.localeCompare(a.id))
-        break
+      default: result.sort((a, b) => b.id.localeCompare(a.id)); break
     }
 
-    return filteredBeats
+    return result
   }, [searchQuery, filters, sortBy, beats])
 
   const displayedBeats = filteredBeats.slice(0, displayCount)
   const hasMore = displayCount < filteredBeats.length
-
-  const loadMore = () => {
-    setDisplayCount((prev) => prev + 25)
-  }
+  const loadMore = () => setDisplayCount((prev) => prev + 25)
 
   const hasActiveFilters = useMemo(() => {
-    if (!filters) return false
+    if (!filters) return !!searchQuery
     return (
       filters.selectedTypeBeats.length > 0 ||
       filters.selectedGenres.length > 0 ||
@@ -179,12 +145,10 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="aspect-square bg-muted animate-pulse rounded-lg" />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[...Array(12)].map((_, i) => (
+          <div key={i} className="aspect-square bg-muted animate-pulse rounded-lg" />
+        ))}
       </div>
     )
   }
@@ -213,7 +177,6 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
               <SelectItem value="oldest">Oldest First</SelectItem>
               <SelectItem value="bpm-low">BPM: Low to High</SelectItem>
               <SelectItem value="bpm-high">BPM: High to Low</SelectItem>
-              <SelectItem value="popular">Most Popular</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -222,9 +185,7 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
       {filteredBeats.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-xl text-muted-foreground mb-2">No beats found</p>
-          <p className="text-sm text-muted-foreground">
-            Try adjusting your search or filters to find what you're looking for
-          </p>
+          <p className="text-sm text-muted-foreground">Try adjusting your filters</p>
         </div>
       ) : (
         <>
@@ -233,12 +194,9 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
               <BeatCard key={beat.id} {...beat} />
             ))}
           </div>
-
           {hasMore && (
             <div className="flex justify-center pt-8">
-              <Button variant="outline" size="lg" onClick={loadMore}>
-                SHOW MORE
-              </Button>
+              <Button variant="outline" size="lg" onClick={loadMore}>SHOW MORE</Button>
             </div>
           )}
         </>
@@ -248,7 +206,6 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
         <button
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 z-50 h-12 w-12 rounded-full bg-[#8c52ff] hover:bg-[#7a45e8] text-white shadow-lg flex items-center justify-center transition-all duration-300"
-          aria-label="Scroll to top"
         >
           <ArrowUp className="h-5 w-5" />
         </button>
