@@ -51,7 +51,7 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
   const filteredBeats = useMemo(() => {
     let result = [...beats]
 
-    // 1. Search Filter
+    // 1. Search Query Filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter((beat) => {
@@ -79,26 +79,25 @@ export function MarketplaceGrid({ searchQuery, filters, onClearFilters }: Market
         // Type Beat (Artist)
         if (filters.selectedTypeBeats.length > 0) {
           if (!beat.typeBeat) return false
-          const normalizedFilters = filters.selectedTypeBeats.map(f => f.replace(" Type Beat", "").trim().toLowerCase())
+          const normalizedFilters = filters.selectedTypeBeats.map((f: string) => f.replace(" Type Beat", "").trim().toLowerCase())
           if (!normalizedFilters.includes(beat.typeBeat.toLowerCase())) return false
         }
 
-        // Genre Filter (Enhanced for string lists)
+        // Genre Filter (Fixed for String Lists & TypeScript)
         if (filters.selectedGenres.length > 0) {
           if (typeof beat.genres !== "string") return false
-          const beatGenreArray = beat.genres.toLowerCase().split(",").map(g => g.trim())
-          const hasMatch = filters.selectedGenres.some(selected => 
+          const beatGenreArray = beat.genres.toLowerCase().split(",").map((g: string) => g.trim())
+          const hasMatch = filters.selectedGenres.some((selected: string) => 
             beatGenreArray.includes(selected.toLowerCase().trim())
           )
           if (!hasMatch) return false
         }
 
-        // Mood Filter (FIXED: Improved matching for strings)
+        // Mood Filter (Fixed for String Lists & TypeScript)
         if (filters.selectedMoods.length > 0) {
           if (typeof beat.mood !== "string") return false
-          // Split by comma to handle strings like "Aggressive, Dark, Hype"
-          const beatMoodArray = beat.mood.toLowerCase().split(",").map(m => m.trim())
-          const hasMatch = filters.selectedMoods.some(selected => 
+          const beatMoodArray = beat.mood.toLowerCase().split(",").map((m: string) => m.trim())
+          const hasMatch = filters.selectedMoods.some((selected: string) => 
             beatMoodArray.includes(selected.toLowerCase().trim())
           )
           if (!hasMatch) return false
